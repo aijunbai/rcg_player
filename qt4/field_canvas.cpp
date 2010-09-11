@@ -39,10 +39,6 @@
 #include "field_canvas.h"
 
 #include "field_painter.h"
-#include "score_board_painter.h"
-#include "ball_painter.h"
-#include "player_painter.h"
-#include "team_graphic_painter.h"
 #include "draw_info_painter.h"
 
 // model
@@ -72,8 +68,6 @@ FieldCanvas::FieldCanvas( MainData & main_data )
     M_measure_font_pen2( QColor( 224, 224, 192 ), 0, Qt::SolidLine ),
     M_measure_font( "6x13bold", 9 )
     , M_current_time( 0 )
-    , M_pointMap_begin( M_main_data.dispHolder().pointMap().end() )
-    , M_pointMap_end( M_main_data.dispHolder().pointMap().end() )
 {
     this->setMouseTracking( true ); // need for the MouseMoveEvent
     this->setFocusPolicy( Qt::WheelFocus );
@@ -167,15 +161,7 @@ FieldCanvas::createPainters()
     M_field_painter = boost::shared_ptr< FieldPainter >( new FieldPainter( M_main_data ) );
 
     M_painters.push_back( boost::shared_ptr< PainterInterface >
-                          ( new PlayerPainter( M_main_data ) ) );
-    M_painters.push_back( boost::shared_ptr< PainterInterface >
-                          ( new BallPainter( M_main_data ) ) );
-    M_painters.push_back( boost::shared_ptr< PainterInterface >
                           ( new DrawInfoPainter( M_main_data ) ) );
-    M_painters.push_back( boost::shared_ptr< PainterInterface >
-                          ( new TeamGraphicPainter( M_main_data ) ) );
-    M_painters.push_back( boost::shared_ptr< PainterInterface >
-                          ( new ScoreBoardPainter( M_main_data ) ) );
 }
 
 /*-------------------------------------------------------------------*/
@@ -289,131 +275,7 @@ FieldCanvas::paintEvent( QPaintEvent * )
 void
 FieldCanvas::updateFocus()
 {
-    DispConstPtr disp = M_main_data.getDispInfo( M_main_data.index() );
 
-    // if auto select mode, update ball nearest player
-    if ( disp
-         && Options::instance().playerAutoSelect() )
-    {
-        const rcss::rcg::ShowInfoT & show = disp->show_;
-
-        Options::PlayerSelectType old_type = Options::instance().playerSelectType();
-
-        float min_dist2 = 40000.0f;
-
-        rcss::rcg::Side side = rcss::rcg::NEUTRAL;
-        int unum = 0;
-
-        const int first = ( old_type == Options::SELECT_AUTO_RIGHT
-                            ? 11
-                            : 0 );
-        const int last = ( old_type == Options::SELECT_AUTO_LEFT
-                           ? 11
-                           : 22 );
-        for ( int i = first; i < last; ++i )
-        {
-            if ( show.player_[i].state_ != 0 )
-            {
-                float d2
-                    = std::pow( show.ball_.x_ - show.player_[i].x_, 2 )
-                    + std::pow( show.ball_.y_ - show.player_[i].y_, 2 );
-
-                if ( d2 < min_dist2 )
-                {
-                    min_dist2 = d2;
-                    side = show.player_[i].side();
-                    unum = show.player_[i].unum_;
-                }
-            }
-        }
-
-        if ( unum != 0 )
-        {
-            Options::instance().setSelectedNumber( side, unum );
-        }
-    }
-
-    // update focus point
-    if ( disp )
-    {
-        if ( Options::instance().focusType() == Options::FOCUS_BALL )
-        {
-            Options::instance().setFocusPointReal( disp->show_.ball_.x_,
-                                                   disp->show_.ball_.y_ );
-        }
-        else if ( Options::instance().focusType() == Options::FOCUS_PLAYER
-                  && Options::instance().selectedNumber() != 0 )
-        {
-            int id = Options::instance().selectedNumber();
-            if ( id < 0 )
-            {
-                id = -1*id + 11;
-            }
-            id -= 1;
-
-            if ( disp->show_.player_[id].state_ != 0 )
-            {
-                Options::instance().setFocusPointReal( disp->show_.player_[id].x_,
-                                                       disp->show_.player_[id].y_ );
-            }
-        }
-        else
-        {
-            // already set
-        }
-    }
-
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-FieldCanvas::selectPlayer( const QPoint & point )
-{
-    DispConstPtr disp = M_main_data.getDispInfo( M_main_data.index() );
-
-    if ( ! disp
-         || ( Options::instance().playerSelectType() != Options::SELECT_FIX
-              && Options::instance().playerSelectType() != Options::SELECT_UNSELECT )
-         )
-    {
-        return;
-    }
-
-    double pos_x = Options::instance().fieldX( point.x() );
-    double pos_y = Options::instance().fieldY( point.y() );
-
-    // if auto select mode, toggle mode
-    const rcss::rcg::ShowInfoT & show = disp->show_;
-
-    double min_dist2 = 1.0 * 1.0;
-    rcss::rcg::Side side = rcss::rcg::NEUTRAL;
-    int unum = 0;
-
-    for ( int i = 0; i < rcss::rcg::MAX_PLAYER*2; ++i )
-    {
-        if ( show.player_[i].state_ != 0 )
-        {
-            double d2
-                = std::pow( pos_x - show.player_[i].x_, 2 )
-                + std::pow( pos_y - show.player_[i].y_, 2 );
-
-            if ( d2 < min_dist2 )
-            {
-                min_dist2 = d2;
-                side = show.player_[i].side();
-                unum = show.player_[i].unum_;
-            }
-        }
-    }
-
-    if ( unum != 0 )
-    {
-        if ( side == rcss::rcg::RIGHT ) unum += rcss::rcg::MAX_PLAYER;
-        emit playerSelected( unum );
-    }
 }
 
 /*-------------------------------------------------------------------*/
@@ -425,32 +287,6 @@ FieldCanvas::event( QEvent * event)
 {
     if (event->type() == QEvent::ToolTip)
     {
-    	QHelpEvent *helpEvent = static_cast<QHelpEvent *>(event);
-    	//std::cerr<<"ToolTip event ("<<helpEvent->x()<<", "<<helpEvent->y()<<")"<<std::endl;
-
-        bool found = false;
-        std::multimap< int, rcss::rcg::PointInfoT >::const_iterator p = M_pointMap_begin;
-        if (p != M_main_data.dispHolder().pointMap().end())
-        {
-
-        	do
-        	{
-        		//std::cerr<<"  point ("<<p->second.x_<<", "<<p->second.y_<<")"<<std::endl;
-        		if ( helpEvent->x() >= Options::instance().screenX(p->second.x_)-1 && helpEvent->x() <= Options::instance().screenX(p->second.x_)+2
-        		     && helpEvent->y() >= Options::instance().screenY(p->second.y_)-1 && helpEvent->y() <= Options::instance().screenY(p->second.y_)+2)
-        		{
-        			found = true;
-        			break;
-        		}
-        		++p;
-        	}
-        	while (p != M_pointMap_end);
-        }
-
-        if (found)
-            QToolTip::showText(helpEvent->globalPos(), p->second.comment_.c_str());
-        else
-            QToolTip::hideText();
     }
     return QWidget::event(event);
 }
@@ -491,7 +327,6 @@ FieldCanvas::mousePressEvent( QMouseEvent * event )
         }
         else
         {
-            selectPlayer( event->pos() );
         }
     }
     else if ( event->button() == Qt::MidButton )
@@ -531,14 +366,6 @@ FieldCanvas::mouseReleaseEvent( QMouseEvent * event )
         }
         else if ( M_mouse_state[0].pressedPoint() == event->pos() )
         {
-            if ( Options::instance().monitorClientMode() )
-            {
-                if ( M_monitor_menu
-                     && ! M_monitor_menu->exec( event->globalPos() ) )
-                {
-                    M_mouse_state[0].setMenuFailed( true );
-                }
-            }
         }
         else
         {
@@ -559,15 +386,6 @@ FieldCanvas::mouseReleaseEvent( QMouseEvent * event )
         }
         else if ( M_mouse_state[2].pressedPoint() == event->pos() )
         {
-            if ( Options::instance().monitorClientMode() )
-            {
-                if ( M_system_menu
-                     && ! M_system_menu->exec( event->globalPos() ) )
-                {
-                    M_mouse_state[2].setMenuFailed( true );
-                }
-            }
-            else
             {
                 if ( M_normal_menu
                      && ! M_normal_menu->exec( event->globalPos() ) )
@@ -655,17 +473,6 @@ FieldCanvas::draw( QPainter & painter )
 
 
     M_field_painter->draw( painter );
-
-    if ( ! M_main_data.getDispInfo( M_main_data.index() ) )
-    {
-        return;
-    }
-
-    //prepare to show tooltip
-    M_current_time = M_main_data.getDispInfo( M_main_data.index() )->show_.time_;
-    M_current_time |= (M_main_data.index() - M_main_data.dispHolder().getIndexOf(M_current_time)) <<16;  // put stopped time to the high 16-bit of M_current_time
-    M_pointMap_begin = M_main_data.dispHolder().pointMap().find(M_current_time);
-    M_pointMap_end = M_main_data.dispHolder().pointMap().upper_bound( M_current_time );
 
     for ( std::vector< boost::shared_ptr< PainterInterface > >::iterator
               it = M_painters.begin();

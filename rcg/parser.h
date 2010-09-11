@@ -53,8 +53,6 @@ private:
     //! reference to the data handler instance
     Handler & M_handler;
 
-    bool M_safe_mode; //!< if this variable is true, parser uses safety but slow algorithm.
-    bool M_header_parsed; //!< flag to determin whether the header data is parsed or not
     int M_line_count; //!< total number of parsed line. This variable is used only for v4+ log.
     int M_time; //!< current time
 
@@ -84,41 +82,8 @@ public:
      */
     bool parse( std::istream & is );
 
-    /*!
-      \brief set safety parsing mode.
-      \param on if this value is true, parser uses safety but slow algorithm.
-     */
-    void setSafeMode( const bool on )
-      {
-          M_safe_mode = on;
-      }
-
 private:
 
-    bool parseHeader( std::istream & is );
-
-    //
-    // version 3 or older
-    //
-
-    bool parseData( std::istream & is );
-
-    bool parseDispInfo( std::istream & is );
-    bool parseMode( std::istream & is );
-    bool parseItem( std::istream & is,
-                    const Int16 mode );
-    bool parseShowInfo( std::istream & is );
-    bool parseMsgInfo( std::istream & is );
-    bool parseDrawInfo( std::istream & is );
-    bool parseDrawInfo( const std::streampos pos,
-                        const drawinfo_t & draw );
-    bool parsePlayMode( std::istream & is );
-    bool parseTeamInfo( std::istream & is );
-    bool parsePlayerType( std::istream & is );
-    bool parsePlayerParam( std::istream & is );
-    bool parseServerParam( std::istream & is );
-
-    //
     // version 4
     //
 

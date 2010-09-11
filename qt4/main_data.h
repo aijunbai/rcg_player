@@ -46,11 +46,6 @@ private:
     DispHolder M_disp_holder;
     std::size_t M_index;
 
-    std::ostream * M_out;
-    bool M_record_mode;
-    rcss::rcg::PlayMode M_record_playmode;
-    rcss::rcg::TeamT M_record_team[2];
-
     // not used
     MainData( const MainData & );
     const MainData & operator=( const MainData & );
@@ -76,47 +71,8 @@ public:
           return M_disp_holder;
       }
 
-    DispConstPtr getDispInfo( const std::size_t idx ) const
-      {
-          return M_disp_holder.getDispInfo( idx );
-      }
-
-    const
-    rcss::rcg::ServerParamT & serverParam() const
-      {
-          return M_disp_holder.serverParam();
-      }
-
-    const
-    rcss::rcg::PlayerParamT & playerParam() const
-      {
-          return M_disp_holder.playerParam();
-      }
-
-    const
-    std::map< int, rcss::rcg::PlayerTypeT > & playerTypes() const
-      {
-          return M_disp_holder.playerTypes();
-      }
-
-    const
-    rcss::rcg::PlayerTypeT & playerType( const int id ) const
-      {
-          return M_disp_holder.playerType( id );
-      }
-
-
     bool openRCG( const QString & file_path,
                   QWidget * parant );
-
-    bool openOutputFile( const QString & file_path );
-    void setEnableRecord( bool checked );
-    void outputCurrentData();
-    void closeOutputFile();
-
-private:
-    void serializeShow( std::ostream & os,
-                        const rcss::rcg::DispInfoT & disp );
 
 public:
 

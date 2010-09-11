@@ -50,10 +50,6 @@ main( int argc,
 
     QApplication app( argc, argv );
 
-    if ( ! Options::instance().parseCmdLine( argc, argv ) )
-    {
-        return 1;
-    }
 
     MainWindow win;
     win.show();

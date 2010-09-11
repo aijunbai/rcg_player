@@ -127,14 +127,6 @@ LogPlayer::stepForwardImpl()
     {
         M_timer->stop();
 
-        if ( Options::instance().autoQuitMode() )
-        {
-            int wait_msec = ( Options::instance().autoQuitWait() > 0
-                              ? Options::instance().autoQuitWait() * 1000
-                              : 100 );
-            QTimer::singleShot( wait_msec,
-                                qApp, SLOT( quit() ) );
-        }
     }
 }
 
@@ -280,60 +272,6 @@ LogPlayer::accelerateForward()
     M_live_mode = false;
     M_forward = true;
     M_timer->start( interval );
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-LogPlayer::goToPrevScore()
-{
-    M_live_mode = false;
-
-    const DispHolder & holder = M_main_data.dispHolder();
-
-    const std::size_t cur_idx = M_main_data.index();
-    std::vector< std::size_t >::const_reverse_iterator rend = holder.scoreChangedIndex().rend();
-    for ( std::vector< std::size_t >::const_reverse_iterator it = holder.scoreChangedIndex().rbegin();
-          it != rend;
-          ++it )
-    {
-        if ( *it < cur_idx )
-        {
-            std::size_t new_idx = *it;
-            new_idx -= ( new_idx < 50 ? new_idx : 50 );
-            goToIndex( new_idx );
-            return;
-        }
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-LogPlayer::goToNextScore()
-{
-    M_live_mode = false;
-
-    const DispHolder & holder = M_main_data.dispHolder();
-
-    const std::size_t cur_idx = M_main_data.index();
-    std::vector< std::size_t >::const_iterator end = holder.scoreChangedIndex().end();
-    for ( std::vector< std::size_t >::const_iterator it = holder.scoreChangedIndex().begin();
-          it != end;
-          ++it )
-    {
-        if ( 50 < *it && cur_idx < *it - 50 )
-        {
-            std::size_t new_idx = *it;
-            new_idx -= ( new_idx < 50 ? 0 : 50 );
-            goToIndex( new_idx );
-            return;
-        }
-    }
 }
 
 /*-------------------------------------------------------------------*/

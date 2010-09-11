@@ -53,9 +53,7 @@ DrawInfoPainter::DrawInfoPainter( const MainData & main_data )
     , M_label_font( "6x13bold", 9, QFont::Bold )
 {
     readSettings();
-    M_label_radius =  ( Options::instance().playerSize() >= 0.01
-                        ? Options::instance().scale( Options::instance().playerSize() )
-                        : 5 );
+    M_label_radius =  5;
 }
 
 /*-------------------------------------------------------------------*/
@@ -129,14 +127,7 @@ DrawInfoPainter::draw( QPainter & painter )
         return;
     }
 
-    DispConstPtr disp = M_main_data.getDispInfo( M_main_data.index() );
-
-    if ( ! disp )
-    {
-        return;
-    }
-
-    const int current_time = ((M_main_data.index() - M_main_data.dispHolder().getIndexOf(disp->show_.time_)) <<16) | disp->show_.time_;
+    const int current_time = M_main_data.index();
 
     const DispHolder & holder = M_main_data.dispHolder();
 

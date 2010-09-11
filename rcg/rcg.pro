@@ -42,10 +42,8 @@ HEADERS += \
     handler.h \
     parser.h \
     types.h \
-    util.h
 
 SOURCES += \
     gzfstream.cpp \
     parser.cpp \
     types.cpp \
-    util.cpp

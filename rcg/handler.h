@@ -58,41 +58,6 @@ public:
 private:
     friend class Parser;
 
-    void handleLogVersion( int ver )
-      {
-          doHandleLogVersion( ver );
-      }
-
-    int getLogVersion() const
-      {
-          return doGetLogVersion();
-      }
-
-    void handleShowInfo( const ShowInfoT & info )
-      {
-          doHandleShowInfo( info );
-      }
-
-    void handleMsgInfo( const int time,
-                        const int board,
-                        const std::string & msg )
-      {
-          doHandleMsgInfo( time, board, msg );
-      }
-
-    void handlePlayMode( const int time,
-                         const PlayMode playmode )
-      {
-          doHandlePlayMode( time, playmode );
-      }
-
-    void handleTeamInfo( const int time,
-                         const TeamT & team_l,
-                         const TeamT & team_r )
-      {
-          doHandleTeamInfo( time, team_l, team_r );
-      }
-
     void handleDrawClear( const int time )
       {
           doHandleDrawClear( time );
@@ -116,50 +81,12 @@ private:
           doHandleDrawLineInfo( time, l );
       }
 
-    void handleServerParam( const ServerParamT & param )
-      {
-          doHandleServerParam( param );
-      }
-
-    void handlePlayerParam( const PlayerParamT & param )
-      {
-          doHandlePlayerParam( param );
-      }
-
-    void handlePlayerType( const PlayerTypeT & type )
-      {
-          doHandlePlayerType( type );
-      }
-
     void handleEOF()
       {
           doHandleEOF();
       }
 
 protected:
-    virtual
-    void doHandleLogVersion( int ver ) = 0;
-
-    virtual
-    int doGetLogVersion() const = 0;
-
-    virtual
-    void doHandleShowInfo( const ShowInfoT & ) = 0;
-
-    virtual
-    void doHandleMsgInfo( const int,
-                          const int,
-                          const std::string & ) = 0;
-
-    virtual
-    void doHandlePlayMode( const int,
-                           const PlayMode ) = 0;
-
-    virtual
-    void doHandleTeamInfo( const int,
-                           const TeamT &,
-                           const TeamT & ) = 0;
-
     virtual
     void doHandleDrawClear( const int ) = 0;
 
@@ -174,15 +101,6 @@ protected:
     virtual
     void doHandleDrawLineInfo( const int,
                                const LineInfoT & ) = 0;
-
-    virtual
-    void doHandleServerParam( const ServerParamT & ) = 0;
-
-    virtual
-    void doHandlePlayerParam( const PlayerParamT & ) = 0;
-
-    virtual
-    void doHandlePlayerType( const PlayerTypeT & ) = 0;
 
     virtual
     void doHandleEOF() = 0;

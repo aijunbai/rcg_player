@@ -92,9 +92,6 @@ public slots:
     void accelerateBack();
     void accelerateForward();
 
-    void goToPrevScore();
-    void goToNextScore();
-
     void goToFirst();
     void goToLast();
 

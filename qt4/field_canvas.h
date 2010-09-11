@@ -92,8 +92,6 @@ private:
 
     // the following lines are added by windywinter for preparing to show tooltip
     int M_current_time;
-    std::multimap< int, rcss::rcg::PointInfoT >::const_iterator M_pointMap_begin;
-    std::multimap< int, rcss::rcg::PointInfoT >::const_iterator M_pointMap_end;
 
     // not used
     FieldCanvas( const FieldCanvas & );
@@ -123,7 +121,6 @@ private:
     void drawMouseMeasure( QPainter & painter );
 
     void updateFocus();
-    void selectPlayer( const QPoint & point );
 
 protected:
 

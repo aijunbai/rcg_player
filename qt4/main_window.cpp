@@ -38,17 +38,11 @@
 
 #include "main_window.h"
 
-#include "detail_dialog.h"
-#include "player_type_dialog.h"
 #include "config_dialog.h"
 #include "field_canvas.h"
-#include "monitor_client.h"
-#include "monitor_server.h"
-#include "image_save_dialog.h"
 #include "log_player.h"
 #include "log_player_tool_bar.h"
 #include "log_slider_tool_bar.h"
-#include "score_board_painter.h"
 #include "options.h"
 
 #include <string>
@@ -74,11 +68,6 @@ MainWindow::MainWindow()
     , M_game_log_path()
     , M_log_player( new LogPlayer( M_main_data, this ) )
     , M_config_dialog( static_cast< ConfigDialog * >( 0 ) )
-    , M_detail_dialog( static_cast< DetailDialog * >( 0 ) )
-    , M_player_type_dialog( static_cast< PlayerTypeDialog * >( 0 ) )
-    , M_monitor_server( static_cast< MonitorServer * >( 0 ) )
-    , M_monitor_client( static_cast< MonitorClient * >( 0 ) )
-    , M_monitor_process( static_cast< QProcess * >( 0 ) )
 {
     readSettings();
 
@@ -165,16 +154,6 @@ MainWindow::init()
     {
         openRCG( QString::fromStdString( Options::instance().gameLogFile() ) );
     }
-    else if ( Options::instance().connect() )
-    {
-        std::string host = Options::instance().serverHost();
-        if ( host.empty() )
-        {
-            host = "127.0.0.1";
-        }
-
-        connectMonitorTo( host.c_str() );
-    }
 
     if ( Options::instance().minimumMode() )
     {
@@ -195,12 +174,6 @@ MainWindow::init()
                              Options::instance().canvasHeight() ) );
     }
 
-    if ( ! Options::instance().monitorPath().empty()
-         && Options::instance().monitorPath() != "self" )
-    {
-        QTimer::singleShot( 100,
-                            this, SLOT( startMonitor() ) );
-    }
 }
 
 /*-------------------------------------------------------------------*/
@@ -273,7 +246,6 @@ void
 MainWindow::createActions()
 {
     createActionsFile();
-    createActionsMonitor();
     createActionsView();
     createActionsHelp();
 
@@ -298,26 +270,7 @@ MainWindow::createActionsFile()
              this, SLOT( openRCG() ) );
     this->addAction( M_open_act );
     //
-    M_open_output_act = new QAction( //QIcon( QPixmap( open_xpm ) ),
-                                    tr( "Record data as..." ), this );
-    M_open_output_act->setEnabled( false );
-#ifdef Q_WS_MAC
-    M_open_output_act->setShortcut( Qt::META + Qt::ALT + Qt::Key_O );
-#else
-    M_open_output_act->setShortcut( Qt::CTRL + Qt::ALT + Qt::Key_O );
-#endif
-    M_open_output_act->setStatusTip( tr( "Open the output file to record log data segments." ) );
-    connect( M_open_output_act, SIGNAL( triggered() ),
-             this, SLOT( openOutputFile() ) );
-    this->addAction( M_open_output_act );
     //
-    M_save_image_act = new QAction( tr( "Save images" ), this );
-    M_save_image_act->setEnabled( false );
-    M_save_image_act->setStatusTip( tr( "Open the dialog to save field status as image data." ) );
-    connect( M_save_image_act, SIGNAL( triggered() ),
-             this, SLOT( saveImage() ) );
-    this->addAction( M_save_image_act );
-
     //
     M_exit_act = new QAction( tr( "&Quit" ), this );
 #ifdef Q_WS_MAC
@@ -335,72 +288,6 @@ MainWindow::createActionsFile()
 /*!
 
  */
-void
-MainWindow::createActionsMonitor()
-{
-    M_kick_off_act = new QAction( tr( "&KickOff" ), this );
-#ifdef Q_WS_MAC
-    M_kick_off_act->setShortcut( Qt::META + Qt::Key_K );
-#else
-    M_kick_off_act->setShortcut( Qt::CTRL + Qt::Key_K );
-#endif
-    M_kick_off_act->setStatusTip( tr( "Send kick-off command to the connected rcssserver." ) );
-    M_kick_off_act->setEnabled( false );
-#ifdef USE_MONITOR_CLIENT
-    connect( M_kick_off_act, SIGNAL( triggered() ),
-             this, SLOT( kickOff() ) );
-    this->addAction( M_kick_off_act );
-#endif
-    //
-    M_set_live_mode_act = new QAction( //QIcon( QPixmap( logplayer_live_mode_xpm ) ),
-                                      tr( "&Live Mode" ),
-                                      this );
-#ifdef Q_WS_MAC
-    M_set_live_mode_act->setShortcut( Qt::META + Qt::Key_L );
-#else
-    M_set_live_mode_act->setShortcut( Qt::CTRL + Qt::Key_L );
-#endif
-    M_set_live_mode_act->setStatusTip( tr( "Set monitor to the live mode" ) );
-    M_set_live_mode_act->setEnabled( false );
-#ifdef USE_MONITOR_CLIENT
-    connect( M_set_live_mode_act, SIGNAL( triggered() ),
-             this, SLOT( setLiveMode() ) );
-    this->addAction( M_set_live_mode_act );
-#endif
-    //
-    M_connect_monitor_act = new QAction( tr( "&Connect" ), this );
-#ifdef Q_WS_MAC
-    M_connect_monitor_act->setShortcut( Qt::META + Qt::Key_C );
-#else
-    M_connect_monitor_act->setShortcut( Qt::CTRL + Qt::Key_C );
-#endif
-    M_connect_monitor_act
-        ->setStatusTip( "Connect to the rcssserver on localhost" );
-    M_connect_monitor_act->setEnabled( true );
-#ifdef USE_MONITOR_CLIENT
-    connect( M_connect_monitor_act, SIGNAL( triggered() ),
-             this, SLOT( connectMonitor() ) );
-    this->addAction( M_connect_monitor_act );
-#endif
-    //
-    M_connect_monitor_to_act = new QAction( tr( "Connect &to ..." ), this );
-    M_connect_monitor_to_act
-        ->setStatusTip( tr( "Connect to the rcssserver on the remote host." ) );
-    M_connect_monitor_to_act->setEnabled( true );
-    connect( M_connect_monitor_to_act, SIGNAL( triggered() ),
-             this, SLOT( connectMonitorTo() ) );
-    this->addAction( M_connect_monitor_to_act );
-    //
-    M_disconnect_monitor_act = new QAction( tr( "&Disconnect" ), this );
-    M_disconnect_monitor_act->setStatusTip( tr( "Disonnect from rcssserver." ) );
-    M_disconnect_monitor_act->setEnabled( false );
-#ifdef USE_MONITOR_CLIENT
-    connect( M_disconnect_monitor_act, SIGNAL( triggered() ),
-             this, SLOT( disconnectMonitor() ) );
-    this->addAction( M_disconnect_monitor_act );
-#endif
-}
-
 /*-------------------------------------------------------------------*/
 /*!
 
@@ -452,29 +339,7 @@ MainWindow::createActionsView()
     (void) new QShortcut( Qt::ALT + Qt::Key_Enter,
                           this, SLOT( toggleFullScreen() ) );
     //
-    M_show_player_type_dialog_act = new QAction( tr( "&Player Type List" ), this );
-#ifdef Q_WS_MAC
-    M_show_player_type_dialog_act->setShortcut( Qt::META + Qt::Key_H );
-#else
-    M_show_player_type_dialog_act->setShortcut( Qt::CTRL + Qt::Key_H );
-#endif
-    M_show_player_type_dialog_act
-        ->setStatusTip( tr( "Show player type parameter dialog." ) );
-    connect( M_show_player_type_dialog_act, SIGNAL( triggered() ),
-             this, SLOT( showPlayerTypeDialog() ) );
-    this->addAction( M_show_player_type_dialog_act );
     //
-    M_show_detail_dialog_act = new QAction( tr( "Object &Detail" ), this );
-#ifdef Q_WS_MAC
-    M_show_detail_dialog_act->setShortcut( Qt::META + Qt::Key_D );
-#else
-    M_show_detail_dialog_act->setShortcut( Qt::CTRL + Qt::Key_D );
-#endif
-    M_show_detail_dialog_act
-        ->setStatusTip( tr( "Show detail information dialog" ) );
-    connect( M_show_detail_dialog_act, SIGNAL( triggered() ),
-             this, SLOT( showDetailDialog() ) );
-    this->addAction( M_show_detail_dialog_act );
 
     // qt style menu group
     M_style_act_group = new QActionGroup( this );
@@ -534,9 +399,6 @@ MainWindow::createMenus()
 {
     createMenuFile();
     createMenuView();
-#ifdef USE_MONITOR_CLIENT
-    createMenuMonitor();
-#endif
     createMenuHelp();
 }
 
@@ -550,10 +412,8 @@ MainWindow::createMenuFile()
     QMenu * menu = menuBar()->addMenu( tr( "&File" ) );
 
     menu->addAction( M_open_act );
-    menu->addAction( M_open_output_act );
 
     menu->addSeparator();
-    menu->addAction( M_save_image_act );
 
     menu->addSeparator();
     menu->addAction( M_exit_act );
@@ -563,21 +423,6 @@ MainWindow::createMenuFile()
 /*!
 
  */
-void
-MainWindow::createMenuMonitor()
-{
-#ifdef USE_MONITOR_CLIENT
-    QMenu * menu = menuBar()->addMenu( tr( "&Monitor" ) );
-
-    menu->addAction( M_kick_off_act );
-    menu->addAction( M_set_live_mode_act );
-
-    menu->addSeparator();
-    menu->addAction( M_connect_monitor_act );
-    menu->addAction( M_connect_monitor_to_act );
-    menu->addAction( M_disconnect_monitor_act );
-#endif
-}
 
 /*-------------------------------------------------------------------*/
 /*!
@@ -600,8 +445,6 @@ MainWindow::createMenuView()
     menu->addAction( M_full_screen_act );
 
     menu->addSeparator();
-    menu->addAction( M_show_player_type_dialog_act );
-    menu->addAction( M_show_detail_dialog_act );
 
     menu->addSeparator();
     {
@@ -694,45 +537,18 @@ MainWindow::createFieldCanvas()
     connect( M_field_canvas, SIGNAL( mouseMoved( const QPoint & ) ),
              this, SLOT( updatePositionLabel( const QPoint & ) ) );
 
-    connect( M_field_canvas, SIGNAL( dropBall( const QPoint & ) ),
-             this, SLOT( dropBall( const QPoint & ) ) );
-    connect( M_field_canvas, SIGNAL( freeKickLeft( const QPoint & ) ),
-             this, SLOT( freeKickLeft( const QPoint & ) ) );
-    connect( M_field_canvas, SIGNAL( freeKickRight( const QPoint & ) ),
-             this, SLOT( freeKickRight( const QPoint & ) ) );
-
     // create & set context menus
     {
         QMenu * menu = new QMenu( M_field_canvas );
         menu->addAction( M_open_act );
-#ifdef USE_MONITOR_CLIENT
-        menu->addAction( M_connect_monitor_act );
-#endif
 
         M_field_canvas->setNormalMenu( menu );
     }
     {
         QMenu * menu = new QMenu( M_field_canvas );
         menu->addAction( M_open_act );
-#ifdef USE_MONITOR_CLIENT
-        menu->addAction( M_connect_monitor_act );
-#endif
 
         M_field_canvas->setSystemMenu( menu );
-    }
-    {
-        QMenu * menu = new QMenu( M_field_canvas );
-        menu->addAction( M_kick_off_act );
-        menu->addSeparator();
-        menu->addAction( tr( "Drop Ball" ),
-                         M_field_canvas, SLOT( dropBall() ) );
-        menu->addAction( tr( "Free Kick Left" ),
-                         M_field_canvas, SLOT( freeKickLeft() ) );
-        menu->addAction( tr( "Free Kick Right" ),
-                         M_field_canvas, SLOT( freeKickRight() ) );
-        menu->addSeparator();
-
-        M_field_canvas->setMonitorMenu( menu );
     }
 }
 
@@ -800,306 +616,12 @@ MainWindow::createConfigDialog()
                  M_config_dialog, SLOT( unzoom() ) );
     }
 
-    // field style
-//     {
-//         QAction * act = new QAction( tr( "Show Keepaway Area" ), this );
-//         act->setStatusTip( tr( "Show keepaway area." ) );
-//         this->addAction( act );
-//         connect( act, SIGNAL( triggered() ),
-//                  M_config_dialog, SLOT( toggleShowKeepawayArea() ) );
-//     }
-
-    // player detail
-    {
-        // n
-        QAction * act = new QAction( tr( "Show Player Number" ), this );
-        act->setShortcut( Qt::Key_N );
-        act->setStatusTip( tr( "Show/Hide player number." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleShowPlayerNumber() ) );
-    }
-    {
-        // h
-        QAction * act = new QAction( tr( "Show Player Type Id" ), this );
-        act->setShortcut( Qt::Key_H );
-        act->setStatusTip( tr( "Show/Hide player type id." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleShowPlayerType() ) );
-    }
-    {
-        // s
-        QAction * act = new QAction( tr( "Show Stamina" ), this );
-        act->setShortcut( Qt::Key_S );
-        act->setStatusTip( tr( "Show/Hide player's stamina." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleShowStamina() ) );
-    }
-    {
-        // Ctrl + s
-        QAction * act = new QAction( tr( "Show Stamina Capacity" ), this );
-#ifdef Q_WS_MAC
-        act->setShortcut( Qt::META + Qt::Key_S );
-#else
-        act->setShortcut( Qt::CTRL + Qt::Key_S );
-#endif
-        act->setStatusTip( tr( "Show/Hide player's stamina capacity." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleShowStaminaCapacity() ) );
-    }
-    {
-        // v
-        QAction * act = new QAction( tr( "Show View Area" ), this );
-        act->setShortcut( Qt::Key_V );
-        act->setStatusTip( tr( "Show/Hide player's view area." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleShowViewArea() ) );
-    }
-    {
-        // c
-        QAction * act = new QAction( tr( "Show Catch Area" ), this );
-        act->setShortcut( Qt::Key_C );
-        act->setStatusTip( tr( "Show/Hide goalie's catchable area." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleShowCatchArea() ) );
-    }
-    {
-        // k
-        QAction * act = new QAction( tr( "Show Tackle Area" ), this );
-        act->setShortcut( Qt::Key_T );
-        act->setStatusTip( tr( "Show/Hide player's tackle area if player can tackle the ball." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleShowTackleArea() ) );
-    }
-    {
-        // k
-        QAction * act = new QAction( tr( "Show Kick Accel Area" ), this );
-        act->setShortcut( Qt::Key_K );
-        act->setStatusTip( tr( "Show/Hide player's kick accel area if player can kick the ball." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleShowKickAccelArea() ) );
-    }
-    {
-        // p
-        QAction * act = new QAction( tr( "Show Pointto Point" ), this );
-        act->setShortcut( Qt::Key_P );
-        act->setStatusTip( tr( "Show/Hide player's pointing position." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleShowPointto() ) );
-    }
-
-    // show/hide
-//     {
-//         // Ctrl + s
-//         QAction * act = new QAction( tr( "Show Score Board" ), this );
-//  #ifdef Q_WS_MAC
-//         act->setShortcut( Qt::META + Qt::Key_S );
-// #else
-//         act->setShortcut( Qt::CTRL + Qt::Key_S );
-// #endif
-//         this->addAction( act );
-//         connect( act, SIGNAL( triggered() ),
-//                  M_config_dialog, SLOT( toggleShowScoreBoard() ) );
-//     }
-    {
-        // Ctrl + b
-        QAction * act = new QAction( tr( "Show Ball" ), this );
-#ifdef Q_WS_MAC
-        act->setShortcut( Qt::META + Qt::Key_B );
-#else
-        act->setShortcut( Qt::CTRL + Qt::Key_B );
-#endif
-        act->setStatusTip( tr( "Show/Hide ball." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleShowBall() ) );
-    }
-    {
-        // Ctrl + p
-        QAction * act = new QAction( tr( "Show Players" ), this );
-#ifdef Q_WS_MAC
-        act->setShortcut( Qt::META + Qt::Key_P );
-#else
-        act->setShortcut( Qt::CTRL + Qt::Key_P );
-#endif
-        act->setStatusTip( tr( "Show/Hide players." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleShowPlayer() ) );
-    }
-    {
-        // f
-        QAction * act = new QAction( tr( "Show Flags" ), this );
-#ifdef Q_WS_MAC
-        act->setShortcut( Qt::META + Qt::Key_F );
-#else
-        act->setShortcut( Qt::CTRL + Qt::Key_F );
-#endif
-        act->setStatusTip( tr( "Show/Hide flags." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleShowFlag() ) );
-    }
-    {
-        // o
-        QAction * act = new QAction( tr( "Show Offside Line" ), this );
-        act->setShortcut( Qt::Key_O );
-        act->setStatusTip( tr( "Show/Hide offside lines." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleShowOffsideLine() ) );
-    }
-
-    // number 1-10
-    for ( int i = 0; i < 10; ++i )
-    {
-        {
-            QAction * act = new QAction( QString( "Select Left %1" ).arg( i ), this );
-            act->setShortcut( Qt::Key_0 + i );
-            act->setStatusTip( QString( "Select left player %1" ).arg( i ) );
-            this->addAction( act );
-            connect( act, SIGNAL( triggered() ),
-                     M_config_dialog, SLOT( selectPlayerWithKey() ) );
-        }
-        {
-            QAction * act = new QAction( QString( "Selct Right %1" ).arg( i ), this );
-#ifdef Q_WS_MAC
-            act->setShortcut( Qt::META + Qt::Key_0 + i );
-#else
-            act->setShortcut( Qt::CTRL + Qt::Key_0 + i );
-#endif
-            act->setStatusTip( QString( "Select right player %1" ).arg( i ) );
-            this->addAction( act );
-            connect( act, SIGNAL( triggered() ),
-                     M_config_dialog, SLOT( selectPlayerWithKey() ) );
-        }
-    }
-    // number 11
-    {
-        {
-            QAction * act = new QAction( tr( "Select Left 11" ), this );
-            act->setShortcut( Qt::Key_Minus );
-            act->setStatusTip( tr( "Select left player 11" ) );
-            this->addAction( act );
-            connect( act, SIGNAL( triggered() ),
-                     M_config_dialog, SLOT( selectPlayerWithKey() ) );
-        }
-        {
-            QAction * act = new QAction( tr( "Select Right 11" ), this );
-#ifdef Q_WS_MAC
-            act->setShortcut( Qt::META + Qt::Key_Minus );
-#else
-            act->setShortcut( Qt::CTRL + Qt::Key_Minus );
-#endif
-            act->setStatusTip( tr( "Select right player 11" ) );
-            this->addAction( act );
-            connect( act, SIGNAL( triggered() ),
-                     M_config_dialog, SLOT( selectPlayerWithKey() ) );
-        }
-    }
-    // b
-    {
-        QAction * act = new QAction( tr( "Focus Ball" ), this );
-        act->setShortcut( Qt::Key_B );
-        act->setStatusTip( tr( "Toggle automatic ball focus mode." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleFocusBall() ) );
-    }
-    // f
-    {
-        QAction * act = new QAction( tr( "Focus Player" ), this );
-        act->setShortcut( Qt::Key_F );
-        act->setStatusTip( tr( "Toggle automatic player focus mode." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleFocusPlayer() ) );
-    }
-    // a
-    {
-        QAction * act = new QAction( tr( "Select auto all" ), this );
-        act->setShortcut( Qt::Key_A );
-        act->setStatusTip( tr( "Toggle automatic player selection from all players." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleSelectAutoAll() ) );
-    }
-    // l
-    {
-        QAction * act = new QAction( tr( "Select auto left" ), this );
-        act->setShortcut( Qt::Key_L );
-        act->setStatusTip( tr( "Toggle automatic player selection from left team." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleSelectAutoLeft() ) );
-    }
-    // r
-    {
-        QAction * act = new QAction( tr( "Select auto right" ), this );
-        act->setShortcut( Qt::Key_R );
-        act->setStatusTip( tr( "Toggle automatic player selection from right team." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleSelectAutoRight() ) );
-    }
-    // u
-    {
-        QAction * act = new QAction( tr( "Unselect" ), this );
-        act->setShortcut( Qt::Key_U );
-        act->setStatusTip( tr( "Unselect the player." ) );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( setUnselect() ) );
-    }
 }
 
 /*-------------------------------------------------------------------*/
 /*!
 
  */
-void
-MainWindow::createMonitorServer()
-{
-    closeMonitorServer();
-
-    M_monitor_server = new MonitorServer( this,
-                                          M_main_data,
-                                          Options::instance().monitorPort() );
-
-    if ( ! M_monitor_server->isConnected() )
-    {
-        delete M_monitor_server;
-        M_monitor_server = static_cast< MonitorServer * >( 0 );
-        return;
-    }
-
-    connect( M_log_player, SIGNAL( updated() ),
-             M_monitor_server, SLOT( sendToClients() ) );
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::closeMonitorServer()
-{
-    if ( M_monitor_server )
-    {
-        disconnect( M_log_player, SIGNAL( updated() ),
-                    M_monitor_server, SLOT( sendToClients() ) );
-        delete M_monitor_server;
-        M_monitor_server = static_cast< MonitorServer * >( 0 );
-    }
-}
 
 /*-------------------------------------------------------------------*/
 /*!
@@ -1260,58 +782,16 @@ MainWindow::openRCG( const QString & file_path )
     }
 
     M_log_player->stop();
-    disconnectMonitor();
-    M_open_output_act->setEnabled( false );
-    M_save_image_act->setEnabled( false );
     M_log_player_tool_bar->checkRecord( false );
     M_log_player_tool_bar->enableRecord( false );
-    M_main_data.closeOutputFile();
 
     if ( ! M_main_data.openRCG( file_path, this ) )
     {
-        if ( Options::instance().autoQuitMode() )
-        {
-            std::cerr << "***ERROR*** Failed to read [" << file_path.toStdString()
-                      << "]" << std::endl;
-            QTimer::singleShot( 100,
-                                qApp, SLOT( quit() ) );
-        }
-        else
-        {
-            QString err_msg = tr( "Failed to read [" );
-            err_msg += file_path;
-            err_msg += tr( "]" );
-            QMessageBox::critical( this,
-                                   tr( "Error" ),
-                                   err_msg,
-                                   QMessageBox::Ok, QMessageBox::NoButton );
-            this->setWindowTitle( tr( PACKAGE_NAME ) );
-            this->statusBar()->showMessage( tr( "Ready" ) );
-        }
         return;
     }
 
-    if ( M_main_data.dispHolder().dispInfoCont().empty() )
+    if ( M_main_data.dispHolder().empty() )
     {
-        if ( Options::instance().autoQuitMode() )
-        {
-            std::cerr << "***ERROR*** Empty log file ["
-                      << file_path.toStdString() << "]" << std::endl;
-            QTimer::singleShot( 100,
-                                qApp, SLOT( quit() ) );
-        }
-        else
-        {
-            QString err_msg = tr( "Empty log file [" );
-            err_msg += file_path;
-            err_msg += tr( "]" );
-            QMessageBox::critical( this,
-                                   tr( "Error" ),
-                                   err_msg,
-                                   QMessageBox::Ok, QMessageBox::NoButton );
-            this->setWindowTitle( tr( PACKAGE_NAME ) );
-            this->statusBar()->showMessage( tr( "Ready" ) );
-        }
         return;
     }
 
@@ -1319,12 +799,6 @@ MainWindow::openRCG( const QString & file_path )
     QFileInfo file_info( file_path );
     M_game_log_path = file_info.absoluteFilePath();
     Options::instance().setGameLogFile( M_game_log_path.toStdString() );
-
-    if ( M_player_type_dialog
-         && M_player_type_dialog->isVisible() )
-    {
-        M_player_type_dialog->updateData();
-    }
 
     if ( M_config_dialog )
     {
@@ -1340,14 +814,6 @@ MainWindow::openRCG( const QString & file_path )
     this->setWindowTitle( name + tr( " - "PACKAGE_NAME ) );
     this->statusBar()->showMessage( name );
 
-    createMonitorServer();
-    M_open_output_act->setEnabled( true );
-    M_save_image_act->setEnabled( true );
-
-    if ( Options::instance().autoQuitMode() )
-    {
-        M_log_player->playForward();
-    }
 
     emit viewUpdated();
 }
@@ -1356,344 +822,33 @@ MainWindow::openRCG( const QString & file_path )
 /*!
 
  */
-void
-MainWindow::openOutputFile()
-{
-    QString filter( tr( "Game Log files (*.rcg);;"
-                        "All files (*)" ) );
-    QString dir_path;
-
-    if ( ! M_game_log_path.isEmpty() )
-    {
-        QFileInfo file_info( M_game_log_path );
-        dir_path = file_info.absolutePath();
-    }
-
-    QString file_path = QFileDialog::getSaveFileName( this,
-                                                      tr( "Output game log data to the file" ),
-                                                      dir_path,
-                                                      filter );
-
-    if ( file_path.isEmpty() )
-    {
-        //std::cerr << "MainWindow::opneRCG() empty file path" << std::endl;
-        return;
-    }
-
-    if ( ! file_path.endsWith( ".rcg" ) )
-    {
-        file_path.append( ".rcg" );
-    }
-
-    std::cerr << "output file = [" << file_path.toStdString() << ']' << std::endl;
-
-    if ( M_main_data.openOutputFile( file_path ) )
-    {
-        M_log_player_tool_bar->enableRecord( true );
-    }
-}
 
 /*-------------------------------------------------------------------*/
 /*!
 
  */
-void
-MainWindow::saveImage()
-{
-    M_log_player->stop();
-
-    ImageSaveDialog dlg( this,
-                         M_field_canvas,
-                         M_main_data );
-
-    dlg.exec();
-}
 
 /*-------------------------------------------------------------------*/
 /*!
 
  */
-void
-MainWindow::toggleRecord( bool checked )
-{
-    M_main_data.setEnableRecord( checked );
-}
 
 /*-------------------------------------------------------------------*/
 /*!
 
  */
-void
-MainWindow::outputCurrentData()
-{
-    M_main_data.outputCurrentData();
-}
-
 /*-------------------------------------------------------------------*/
 /*!
 
  */
-void
-MainWindow::startMonitor()
-{
-    M_monitor_process = new QProcess( this );
-
-    connect( M_monitor_process, SIGNAL( error( QProcess::ProcessError ) ),
-             this, SLOT( printMonitorError( QProcess::ProcessError ) ) );
-    connect( M_monitor_process, SIGNAL( finished( int, QProcess::ExitStatus ) ),
-             this, SLOT( printMonitorExit( int, QProcess::ExitStatus ) ) );
-
-    QString command = QString::fromStdString( Options::instance().monitorPath() );
-
-    std::cout << "starting monitor \"" << command.toStdString() << "\" ..."
-              << std::endl;
-
-    M_monitor_process->start( command );
-
-    //QProcess::startDetached( command );
-}
-
 /*-------------------------------------------------------------------*/
 /*!
 
  */
-void
-MainWindow::printMonitorError( QProcess::ProcessError error )
-{
-    switch ( error ) {
-    case QProcess::FailedToStart:
-        std::cerr << "Failed to start the monitor ["
-                  << Options::instance().monitorPath() << "]" << std::endl;
-        break;
-    case QProcess::Crashed:
-        std::cerr << "Crashed the monitor ["
-                  << Options::instance().monitorPath() << "]" << std::endl;
-        break;
-    case QProcess::Timedout:
-        std::cerr << "Timeout the monitor ["
-                  << Options::instance().monitorPath() << "]" << std::endl;
-        break;
-    case QProcess::WriteError:
-        std::cerr << "Write error to the monitor ["
-                  << Options::instance().monitorPath() << "]" << std::endl;
-        break;
-    case QProcess::ReadError:
-        std::cerr << "Read error to the monitor ["
-                  << Options::instance().monitorPath() << "]" << std::endl;
-        break;
-    case QProcess::UnknownError:
-        std::cerr << "Unknown error to the monitor ["
-                  << Options::instance().monitorPath() << "]" << std::endl;
-        break;
-    default:
-        break;
-    }
-
-    this->close();
-}
-
 /*-------------------------------------------------------------------*/
 /*!
 
  */
-void
-MainWindow::printMonitorExit( int exit_code,
-                              QProcess::ExitStatus exit_status )
-{
-    switch ( exit_status ) {
-    case QProcess::NormalExit:
-        break;
-    case QProcess::CrashExit:
-        std::cerr << "monitor exit with some error. exit code=" << exit_code
-                  << std::endl;
-        break;
-    default:
-        break;
-    }
-
-    this->close();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::kickOff()
-{
-    if ( M_monitor_client
-         && M_monitor_client->isConnected() )
-    {
-        M_monitor_client->sendKickOff();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::setLiveMode()
-{
-    if ( M_monitor_client
-         && M_monitor_client->isConnected() )
-    {
-        M_log_player->setLiveMode();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::connectMonitor()
-{
-    QString host = QString::fromStdString( Options::instance().serverHost() );
-    if ( host.isEmpty() )
-    {
-        host = "127.0.0.1";
-    }
-
-    connectMonitorTo( host.toStdString().c_str() );
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::connectMonitorTo()
-{
-    QString host = QString::fromStdString( Options::instance().serverHost() );
-    if ( host.isEmpty() )
-    {
-        host = "127.0.0.1";
-    }
-
-    bool ok = true;
-    QString text = QInputDialog::getText( this,
-                                          tr( "Input sserver host name" ),
-                                          tr( "Host name: "),
-                                          QLineEdit::Normal,
-                                          host,
-                                          & ok );
-    if ( ok
-         && ! text.isEmpty() )
-    {
-        connectMonitorTo( text.toStdString().c_str() );
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::connectMonitorTo( const char * hostname )
-{
-    if ( std::strlen( hostname ) == 0 )
-    {
-        std::cerr << "Empty host name! Connection failed!" << std::endl;
-        return;
-    }
-
-    M_open_output_act->setEnabled( false );
-
-    closeMonitorServer();
-
-    std::cerr << "Connect to [" << hostname << "] ..." << std::endl;
-
-    M_monitor_client = new MonitorClient( this,
-                                          M_main_data.dispHolder(),
-                                          hostname,
-                                          Options::instance().serverPort(),
-                                          Options::instance().clientVersion() );
-
-    if ( ! M_monitor_client->isConnected() )
-    {
-        std::cerr << "Conenction failed." << std::endl;
-        delete M_monitor_client;
-        M_monitor_client = static_cast< MonitorClient * >( 0 );
-        return;
-    }
-
-    // reset all data
-    M_main_data.clear();
-
-    if ( M_player_type_dialog )
-    {
-        M_player_type_dialog->hide();
-    }
-
-    if ( M_config_dialog )
-    {
-        M_config_dialog->unzoom();
-    }
-
-    Options::instance().setMonitorClientMode( true );
-    Options::instance().setServerHost( hostname );
-
-    M_save_image_act->setEnabled( false );
-
-    M_open_output_act->setEnabled( true );
-
-    M_kick_off_act->setEnabled( true );
-    M_set_live_mode_act->setEnabled( true );
-    M_connect_monitor_act->setEnabled( false );
-    M_connect_monitor_to_act->setEnabled( false );
-    M_disconnect_monitor_act->setEnabled( true );
-
-    connect( M_monitor_client, SIGNAL( received() ),
-             this, SLOT( receiveMonitorPacket() ) );
-//     connect( M_monitor_client, SIGNAL( timeout() ),
-//              this, SLOT( disconnectMonitor() ) );
-
-    M_log_player->setLiveMode();
-
-    M_monitor_client->sendDispInit();
-
-    if ( QApplication::overrideCursor() )
-    {
-        QApplication::restoreOverrideCursor();
-    }
-
-    this->setWindowTitle( tr( PACKAGE_NAME ) );
-
-    createMonitorServer();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::disconnectMonitor()
-{
-    //std::cerr << "MainWindow::disconnectMonitor()" << std::endl;
-    if ( M_monitor_client )
-    {
-        M_monitor_client->disconnect();
-
-        disconnect( M_monitor_client, SIGNAL( received() ),
-                    this, SLOT( receiveMonitorPacket() ) );
-
-        disconnect( M_monitor_client, SIGNAL( timeout() ),
-                    this, SLOT( disconnectMonitor() ) );
-
-        delete M_monitor_client;
-        M_monitor_client = static_cast< MonitorClient * >( 0 );
-    }
-
-    Options::instance().setMonitorClientMode( false );
-
-    M_kick_off_act->setEnabled( false );
-    M_set_live_mode_act->setEnabled( false );
-    M_connect_monitor_act->setEnabled( true );
-    M_connect_monitor_to_act->setEnabled( true );
-    M_disconnect_monitor_act->setEnabled( false );
-}
-
 /*-------------------------------------------------------------------*/
 /*!
 
@@ -1739,12 +894,6 @@ MainWindow::toggleFieldCanvas()
     const bool visible = ! Options::instance().minimumMode();
     M_position_label->setVisible( visible );
     if ( ! visible
-         && M_detail_dialog
-         && M_detail_dialog->isVisible() )
-    {
-        M_detail_dialog->hide();
-    }
-    if ( ! visible
          && M_config_dialog
          && M_config_dialog->isVisible() )
     {
@@ -1754,7 +903,6 @@ MainWindow::toggleFieldCanvas()
     M_toggle_status_bar_act->setEnabled( visible );
     M_full_screen_act->setEnabled( visible );
     M_show_config_dialog_act->setEnabled( visible );
-    M_show_detail_dialog_act->setEnabled( visible );
 
     if ( Options::instance().minimumMode() )
     {
@@ -1834,41 +982,6 @@ MainWindow::toggleFullScreen()
 /*!
 
  */
-void
-MainWindow::showPlayerTypeDialog()
-{
-    if ( M_player_type_dialog )
-    {
-        M_player_type_dialog->setVisible( ! M_player_type_dialog->isVisible() );
-    }
-    else
-    {
-        M_player_type_dialog = new PlayerTypeDialog( this, M_main_data );
-        M_player_type_dialog->show();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::showDetailDialog()
-{
-    if ( M_detail_dialog )
-    {
-        M_detail_dialog->setVisible( ! M_detail_dialog->isVisible() );
-    }
-    else
-    {
-        M_detail_dialog = new DetailDialog( this, M_main_data );
-        connect( this,  SIGNAL( viewUpdated() ),
-                 M_detail_dialog, SLOT( updateLabels() ) );
-
-        M_detail_dialog->show();
-    }
-}
-
 /*-------------------------------------------------------------------*/
 /*!
 
@@ -1911,15 +1024,6 @@ void
 MainWindow::about()
 {
     QString msg( tr( PACKAGE_NAME"-"VERSION"\n\n" ) );
-    msg += tr( "The RoboCup Soccer Simulator LogPlayer (rcg) is a game log replay tool\n"
-               "for the RoboCup Soccer Siulator Server (rcssserver).\n"
-               "\n"
-               "The RoboCup Soccer Simulator Official Web Page:\n"
-               "  http://sserver.sourceforge.net/\n"
-               "Author:\n"
-               "  The RoboCup Soccer Simulator Maintenance Committee.\n"
-               "  <sserver-admin@lists.sourceforgenet>" );
-
     QMessageBox::about( this,
                         tr( "About "PACKAGE_NAME ),
                         msg );
@@ -2039,19 +1143,6 @@ MainWindow::resizeCanvas( const QSize & size )
 /*!
 
  */
-void
-MainWindow::receiveMonitorPacket()
-{
-    if ( M_log_player->isLiveMode() )
-    {
-        M_log_player->showLive();
-    }
-    else
-    {
-        M_log_slider_tool_bar->updateSlider();
-    }
-}
-
 /*-------------------------------------------------------------------*/
 /*!
 
@@ -2073,65 +1164,5 @@ MainWindow::updatePositionLabel( const QPoint & point )
                   x, y );
 
         M_position_label->setText( QString::fromAscii( buf ) );
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::dropBall( const QPoint & point )
-{
-    if ( M_monitor_client
-         && M_monitor_client->isConnected() )
-    {
-        double x = Options::instance().fieldX( point.x() );
-        double y = Options::instance().fieldY( point.y() );
-
-        std::cerr << "drop ball to ("
-                  << x << ", " << y << ")"
-                  << std::endl;
-        M_monitor_client->sendDropBall( x, y );
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::freeKickLeft( const QPoint & point )
-{
-    if ( M_monitor_client
-         && M_monitor_client->isConnected() )
-    {
-        double x = Options::instance().fieldX( point.x() );
-        double y = Options::instance().fieldY( point.y() );
-
-        std::cerr << "free kick left at ("
-                  << x << ", " << y << ")"
-                  << std::endl;
-        M_monitor_client->sendFreeKickLeft( x, y );
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::freeKickRight( const QPoint & point )
-{
-    if ( M_monitor_client
-         && M_monitor_client->isConnected() )
-    {
-        double x = Options::instance().fieldX( point.x() );
-        double y = Options::instance().fieldY( point.y() );
-
-        std::cerr << "free kick right at ("
-                  << x << ", " << y << ")"
-                  << std::endl;
-        M_monitor_client->sendFreeKickRight( x, y );
     }
 }

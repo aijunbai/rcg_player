@@ -50,8 +50,6 @@
 #include "icons/minus.xpm"
 #include "icons/ff.xpm"
 #include "icons/rew.xpm"
-#include "icons/next_score.xpm"
-#include "icons/prev_score.xpm"
 #include "icons/rec.xpm"
 
 /*-------------------------------------------------------------------*/
@@ -95,18 +93,6 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
                                   QMainWindow * main_win )
 {
     // visible actions
-    {
-        QAction * act
-            = new QAction( QIcon( QPixmap( prev_score_xpm ) ),
-                           tr( "Previous score" ), this );
-        act->setShortcut( tr( "Ctrl+G" ) );
-        act->setStatusTip( tr( "Go to the previous goal scene.(" )
-                           + act->shortcut().toString() + tr(")" ) );
-        connect( act, SIGNAL( triggered() ),
-                 log_player, SLOT( goToPrevScore() ) );
-        this->addAction( act );
-        main_win->addAction( act );
-    }
     {
         QAction * act
             = new QAction( QIcon( QPixmap( rew_xpm ) ),
@@ -196,18 +182,6 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
                            + act->shortcut().toString() + tr( ")" ) );
         connect( act, SIGNAL( triggered() ),
                  log_player, SLOT( accelerateForward() ) );
-        this->addAction( act );
-        main_win->addAction( act );
-    }
-    {
-        QAction * act
-            = new QAction( QIcon( QPixmap( next_score_xpm ) ),
-                           tr( "Next score" ), this );
-        act->setShortcut( Qt::Key_G );
-        act->setStatusTip( tr( "Go to the next goal scene.(" )
-                           + act->shortcut().toString() + tr( ")" ) );
-        connect( act, SIGNAL( triggered() ),
-                 log_player, SLOT( goToNextScore() ) );
         this->addAction( act );
         main_win->addAction( act );
     }

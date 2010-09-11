@@ -33,7 +33,6 @@
 #ifndef RCSSLOGPLAYER_DISP_HOLDER_H
 #define RCSSLOGPLAYER_DISP_HOLDER_H
 
-#include "team_graphic.h"
 
 #include <rcg/types.h>
 #include <rcg/handler.h>
@@ -44,39 +43,15 @@
 #include <vector>
 #include <iostream>
 
-typedef boost::shared_ptr< rcss::rcg::DispInfoT > DispPtr;
-typedef boost::shared_ptr< const rcss::rcg::DispInfoT > DispConstPtr;
-
 class DispHolder
     : public rcss::rcg::Handler {
 private:
 
     int M_log_version;
-    rcss::rcg::PlayMode M_playmode; //!< last handled playmode
-    rcss::rcg::TeamT M_teams[2]; //!< last handled team info
-    DispPtr M_last_disp;
-
-    std::vector< DispPtr > M_dispinfo_cont;
-
-    rcss::rcg::ServerParamT M_server_param;
-    rcss::rcg::PlayerParamT M_player_param;
-    rcss::rcg::PlayerTypeT M_default_player_type;
-    std::map< int, rcss::rcg::PlayerTypeT > M_player_types;
-
-    //! the index of score change
-    std::vector< std::size_t > M_score_changed_index;
-
-    // the record of penalty score/miss, first: time, second: playmode
-    std::vector< std::pair< int, rcss::rcg::PlayMode > > M_penalty_scores_left;
-    std::vector< std::pair< int, rcss::rcg::PlayMode > > M_penalty_scores_right;
 
     std::multimap< int, rcss::rcg::PointInfoT > M_point_map;
     std::multimap< int, rcss::rcg::LineInfoT > M_line_map;
     std::multimap< int, rcss::rcg::CircleInfoT > M_circle_map;
-
-    // team graphic holder
-    TeamGraphic M_team_graphic_left;
-    TeamGraphic M_team_graphic_right;
 
     // not used
     DispHolder( const DispHolder & );
@@ -88,64 +63,13 @@ public:
 
     void clear();
 
-    int logVersion() const
-      {
-          return M_log_version;
-      }
+    int size() {
+        return 0;
+    }
 
-    DispConstPtr getDispInfo( const std::size_t idx ) const;
-    std::size_t getIndexOf( const int time ) const;
-
-    DispConstPtr lastDispInfo() const
-      {
-          return M_last_disp;
-      }
-
-    const
-    std::vector< DispPtr > & dispInfoCont() const
-      {
-          return M_dispinfo_cont;
-      }
-
-    const
-    rcss::rcg::ServerParamT & serverParam() const
-      {
-          return M_server_param;
-      }
-
-    const
-    rcss::rcg::PlayerParamT & playerParam() const
-      {
-          return M_player_param;
-      }
-
-    const
-    std::map< int, rcss::rcg::PlayerTypeT > & playerTypes() const
-      {
-          return M_player_types;
-      }
-
-    const
-    rcss::rcg::PlayerTypeT & playerType( const int id ) const;
-
-    const
-    std::vector< std::size_t > & scoreChangedIndex() const
-      {
-          return M_score_changed_index;
-      }
-
-    const
-    std::vector< std::pair< int, rcss::rcg::PlayMode > > & penaltyScoresLeft() const
-      {
-          return M_penalty_scores_left;
-      }
-
-    const
-    std::vector< std::pair< int, rcss::rcg::PlayMode > > & penaltyScoresRight() const
-      {
-          return M_penalty_scores_right;
-      }
-
+    bool empty() {
+        return size() == 0;
+    }
 
     const
     std::multimap< int, rcss::rcg::PointInfoT > & pointMap() const
@@ -165,42 +89,7 @@ public:
           return M_line_map;
       }
 
-
-    const
-    TeamGraphic & teamGraphicLeft() const
-      {
-          return M_team_graphic_left;
-      }
-
-    const
-    TeamGraphic & teamGraphicRight() const
-      {
-          return M_team_graphic_right;
-      }
-
-
-    bool addDispInfo1( const rcss::rcg::dispinfo_t & disp );
-    bool addDispInfo2( const rcss::rcg::dispinfo_t2 & disp );
-    bool addDispInfo3( const char * msg );
-
 private:
-    virtual
-    void doHandleLogVersion( int ver );
-    virtual
-    int doGetLogVersion() const;
-    virtual
-    void doHandleShowInfo( const rcss::rcg::ShowInfoT & );
-    virtual
-    void doHandleMsgInfo( const int,
-                          const int,
-                          const std::string & );
-    virtual
-    void doHandlePlayMode( const int,
-                           const rcss::rcg::PlayMode );
-    virtual
-    void doHandleTeamInfo( const int,
-                           const rcss::rcg::TeamT &,
-                           const rcss::rcg::TeamT & );
     virtual
     void doHandleDrawClear( const int );
     virtual
@@ -213,17 +102,7 @@ private:
     void doHandleDrawCircleInfo( const int,
                                  const rcss::rcg::CircleInfoT & );
     virtual
-    void doHandleServerParam( const rcss::rcg::ServerParamT & );
-    virtual
-    void doHandlePlayerParam( const rcss::rcg::PlayerParamT & );
-    virtual
-    void doHandlePlayerType( const rcss::rcg::PlayerTypeT & );
-    virtual
     void doHandleEOF();
-
-private:
-    void analyzeTeamGraphic( const std::string & msg );
-
 };
 
 #endif
