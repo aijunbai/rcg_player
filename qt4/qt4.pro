@@ -3,8 +3,6 @@ QT += network
 TARGET = uniplayer
 DESTDIR = ../bin
 
-CONFIG += Debug
-
 DEPENDPATH += . ../rcg
 
 INCLUDEPATH += . ..

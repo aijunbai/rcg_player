@@ -1,7 +1,6 @@
 
 TEMPLATE = subdirs
 SUBDIRS = rcg qt4
-CONFIG += Debug
 
 # Input
 DISPFILES += \

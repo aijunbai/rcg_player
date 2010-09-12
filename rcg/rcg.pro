@@ -4,8 +4,6 @@ TARGET = rcssrcgparser
 DESTDIR = ../lib
 DEPENDPATH += .
 
-CONFIG += Debug
-
 INCLUDEPATH += . ..
 win32 {
   INCLUDEPATH += ../../zlib123-dll/include
