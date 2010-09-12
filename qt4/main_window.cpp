@@ -80,15 +80,10 @@ MainWindow::MainWindow()
     // control dialogs
     createConfigDialog();
 
-    connect( M_field_canvas, SIGNAL( playerSelected( int ) ),
-             M_config_dialog, SLOT( selectPlayer( int ) ) );
-    connect( M_field_canvas, SIGNAL( focusChanged( const QPoint & ) ),
-             M_config_dialog, SLOT( setFocusPoint( const QPoint & ) ) );
-
     connect( M_log_player, SIGNAL( updated() ),
              this, SIGNAL( viewUpdated() ) );
-    connect( M_log_player, SIGNAL( updated() ),
-             this, SLOT( outputCurrentData() ) );
+    connect( M_field_canvas, SIGNAL( focusChanged( const QPoint & ) ),
+             M_config_dialog, SLOT( setFocusPoint( const QPoint & ) ) );
 
     this->setWindowIcon( QIcon( QPixmap( rcss_xpm ) ) );
     this->setWindowTitle( tr( PACKAGE_NAME ) );
@@ -482,9 +477,6 @@ MainWindow::createToolBars()
     M_log_player_tool_bar = new LogPlayerToolBar( M_log_player,
                                                   M_main_data,
                                                   this );
-    connect( M_log_player_tool_bar, SIGNAL( recordToggled( bool ) ),
-             this, SLOT( toggleRecord( bool ) ) );
-
     this->addToolBar( Qt::TopToolBarArea, M_log_player_tool_bar );
 
     //
@@ -782,8 +774,6 @@ MainWindow::openRCG( const QString & file_path )
     }
 
     M_log_player->stop();
-    M_log_player_tool_bar->checkRecord( false );
-    M_log_player_tool_bar->enableRecord( false );
 
     if ( ! M_main_data.openRCG( file_path, this ) )
     {
@@ -792,6 +782,7 @@ MainWindow::openRCG( const QString & file_path )
 
     if ( M_main_data.dispHolder().empty() )
     {
+        qDebug() << "Empty Disp Data" << endl;
         return;
     }
 

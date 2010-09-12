@@ -129,6 +129,36 @@ DrawInfoPainter::draw( QPainter & painter )
 
     const int current_time = M_main_data.index();
 
+    {
+   
+        QString main_buf;
+        main_buf.sprintf( "%d", current_time);
+
+        QFont M_font;
+        M_font.setPointSize( 11 );
+        M_font.setBold( true );
+        M_font.setFixedPitch( true );
+
+        painter.setFont( M_font );
+
+        QRect rect;
+        QRect bounding_rect = painter.fontMetrics().boundingRect( main_buf );
+        rect.setLeft( 0 );
+        rect.setTop( painter.window().bottom() - bounding_rect.height() + 1 );
+        rect.setWidth( bounding_rect.width() );
+        rect.setHeight( bounding_rect.height() );
+
+        QBrush M_brush( QColor( 0, 0, 0 ), Qt::SolidPattern );
+        painter.fillRect( rect, M_brush );
+        QPen M_pen( QColor( 255, 255, 255 ), Qt::SolidPattern );
+        painter.setPen( M_pen );
+        painter.setBrush( Qt::NoBrush );
+
+        painter.drawText( rect,
+                      Qt::AlignVCenter,
+                      main_buf );
+    }
+
     const DispHolder & holder = M_main_data.dispHolder();
 
     painter.setBrush( Qt::NoBrush );

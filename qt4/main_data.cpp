@@ -74,7 +74,7 @@ quantize( const float & val,
 */
 MainData::MainData()
 {
-
+ clear();
 }
 
 /*-------------------------------------------------------------------*/
@@ -102,7 +102,7 @@ MainData::clear()
 */
 bool
 MainData::openRCG( const QString & file_path,
-                   QWidget * parent )
+                   QWidget *  )
 {
 #ifdef HAVE_LIBZ
     rcss::gzifstream fin( file_path.toAscii() );

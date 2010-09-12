@@ -120,6 +120,8 @@ private slots:
 
     void clickAntiAliasing( bool checked );
 
+    void setFocusPoint( const QPoint & point );
+
 public slots:
 
     // just update this dialog contents

@@ -76,7 +76,6 @@ private:
 
     QMenu * M_normal_menu;
     QMenu * M_system_menu;
-    QMenu * M_monitor_menu;
 
     boost::shared_ptr< FieldPainter > M_field_painter;
     std::vector< boost::shared_ptr< PainterInterface > > M_painters;
@@ -134,18 +133,7 @@ protected:
 
 public slots:
 
-    void dropBall();
-    void freeKickLeft();
-    void freeKickRight();
-
 signals:
-
-    void dropBall( const QPoint & pos );
-    void freeKickLeft( const QPoint & pos );
-    void freeKickRight( const QPoint & pos );
-
-    void playerMoved( const QPoint & point );
-    void playerSelected( int number );
 
     void focusChanged( const QPoint & point );
     void mouseMoved( const QPoint & point );

@@ -308,7 +308,7 @@ LogSliderToolBar::updateSlider()
         return;
     }
 
-    int size = 1; //M_main_data.dispHolder().dispInfoCont().size();
+    int size = M_main_data.dispHolder().size();
 
     if ( size == 1 ) size = 0;
 

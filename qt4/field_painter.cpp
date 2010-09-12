@@ -51,7 +51,7 @@
 FieldPainter::FieldPainter( const MainData & main_data )
     : M_main_data( main_data )
     , M_field_brush( QColor( 31, 160, 31 ), Qt::SolidPattern )
-    , M_line_pen( QColor( 255, 255, 255 ),1, Qt::SolidLine )
+    , M_line_pen( QColor( 0xaa, 0xaa, 0xaa ),1, Qt::SolidLine )
 {
     readSettings();
 }
@@ -174,17 +174,18 @@ FieldPainter::drawLines( QPainter & painter ) const
     painter.setBrush( Qt::NoBrush );
 
     // set screen coordinates of field
-    int left_x   = opt.screenX( - Options::PITCH_HALF_LENGTH );
-    int right_x  = opt.screenX( + Options::PITCH_HALF_LENGTH );
-    int top_y    = opt.screenY( - Options::PITCH_HALF_WIDTH );
-    int bottom_y = opt.screenY( + Options::PITCH_HALF_WIDTH );
+    int left_x   = opt.screenX( - 600.0);
+    int right_x  = opt.screenX( + 600.0);
+    int top_y    = opt.screenY( - 300.0);
+    int bottom_y = opt.screenY( + 300.0);
 
     // side lines & goal lines
     painter.drawLine( left_x, top_y, right_x, top_y );
     painter.drawLine( right_x, top_y, right_x, bottom_y );
     painter.drawLine( right_x, bottom_y, left_x, bottom_y );
     painter.drawLine( left_x, bottom_y, left_x, top_y );
-
+    painter.drawLine( left_x, opt.screenY(0), right_x, opt.screenY(0) );
+    painter.drawLine( opt.screenX(0), bottom_y, opt.screenX(0), top_y);
 }
 
 /*-------------------------------------------------------------------*/

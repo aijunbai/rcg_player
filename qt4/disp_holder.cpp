@@ -54,8 +54,7 @@
 /*!
 
  */
-DispHolder::DispHolder()
-    : M_log_version( 0 )
+DispHolder::DispHolder(): M_size(0)
 {
 
 }
@@ -100,6 +99,7 @@ void
 DispHolder::doHandleDrawPointInfo( const int time,
                                    const rcss::rcg::PointInfoT & point )
 {
+    M_size = std::max(M_size, uint(time));
     M_point_map.insert( std::pair< int, rcss::rcg::PointInfoT >( time, point ) );
 }
 
@@ -111,6 +111,7 @@ void
 DispHolder::doHandleDrawCircleInfo( const int time,
                                     const rcss::rcg::CircleInfoT & circle )
 {
+    M_size = std::max(M_size, uint(time));
     M_circle_map.insert( std::pair< int, rcss::rcg::CircleInfoT >( time, circle ) );
 }
 
@@ -122,6 +123,7 @@ void
 DispHolder::doHandleDrawLineInfo( const int time,
                                   const rcss::rcg::LineInfoT & line )
 {
+    M_size = std::max(M_size, uint(time));
     M_line_map.insert( std::pair< int, rcss::rcg::LineInfoT >( time, line ) );
 }
 

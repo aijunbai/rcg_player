@@ -47,11 +47,11 @@ class DispHolder
     : public rcss::rcg::Handler {
 private:
 
-    int M_log_version;
-
     std::multimap< int, rcss::rcg::PointInfoT > M_point_map;
     std::multimap< int, rcss::rcg::LineInfoT > M_line_map;
     std::multimap< int, rcss::rcg::CircleInfoT > M_circle_map;
+
+    unsigned int M_size;
 
     // not used
     DispHolder( const DispHolder & );
@@ -63,8 +63,8 @@ public:
 
     void clear();
 
-    int size() {
-        return 0;
+    unsigned int size() const {
+        return M_size;
     }
 
     bool empty() {

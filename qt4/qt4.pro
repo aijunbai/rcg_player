@@ -44,7 +44,7 @@ macx {
   DEFINES += HAVE_BOOST_PROGRAM_OPTIONS
 }
 DEFINES += PACKAGE="\\\"uniplayer\\\""
-DEFINES += PACKAGE_NAME="\\\"uniplayer\\\"" VERSION="\\\"14.0.1\\\""
+DEFINES += PACKAGE_NAME="\\\"uniplayer\\\"" VERSION="\\\"1.0\\\""
 
 CONFIG += qt warn_on release
 win32 {

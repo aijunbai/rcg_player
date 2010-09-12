@@ -55,7 +55,6 @@ private:
     const MainData & M_main_data;
     LogPlayer * M_log_player;
 
-    QAction * M_toggle_record_act;
 
 public:
 
@@ -73,11 +72,6 @@ protected:
 
 //     void moveEvent( QMoveEvent * event );
 
-public slots:
-
-    void checkRecord( bool checked );
-    void enableRecord( bool checked );
-
 private slots:
 
 
@@ -88,7 +82,6 @@ private slots:
 signals:
 
     void cycleChanged( int cycle );
-    void recordToggled( bool checked );
 
 };
 

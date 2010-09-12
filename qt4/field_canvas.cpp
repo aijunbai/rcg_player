@@ -61,7 +61,6 @@ FieldCanvas::FieldCanvas( MainData & main_data )
     M_main_data( main_data ),
     M_normal_menu( static_cast< QMenu * >( 0 ) ),
     M_system_menu( static_cast< QMenu * >( 0 ) ),
-    M_monitor_menu( static_cast< QMenu * >( 0 ) ),
     M_measure_line_pen( QColor( 0, 255, 255 ), 0, Qt::SolidLine ),
     M_measure_mark_pen( QColor( 255, 0, 0 ), 0, Qt::SolidLine ),
     M_measure_font_pen( QColor( 255, 191, 191 ), 0, Qt::SolidLine ),
@@ -194,52 +193,6 @@ FieldCanvas::setSystemMenu( QMenu * menu )
     }
 
     M_system_menu = menu;
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-FieldCanvas::setMonitorMenu( QMenu * menu )
-{
-    if ( M_monitor_menu )
-    {
-        delete M_monitor_menu;
-        M_monitor_menu = static_cast< QMenu * >( 0 );
-    }
-
-    M_monitor_menu = menu;
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-FieldCanvas::dropBall()
-{
-    emit dropBall( M_mouse_state[0].pressedPoint() );
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-FieldCanvas::freeKickLeft()
-{
-    emit freeKickLeft( M_mouse_state[0].pressedPoint() );
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-FieldCanvas::freeKickRight()
-{
-    emit freeKickRight( M_mouse_state[0].pressedPoint() );
 }
 
 /*-------------------------------------------------------------------*/

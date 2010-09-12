@@ -48,12 +48,6 @@
 class Options {
 public:
 
-    static const double PITCH_LENGTH;
-    static const double PITCH_WIDTH;
-    static const double PITCH_HALF_LENGTH;
-    static const double PITCH_HALF_WIDTH;
-    static const double PITCH_MARGIN;
-
 
     //! minimum field scale
     static const double MIN_FIELD_SCALE;
@@ -63,6 +57,8 @@ public:
     static const double ZOOM_RATIO;
     //! default logplayer timer step (ms).
     static const int DEFAULT_TIMER_INTERVAL;
+
+    bool parseCmdLine( int argc, char ** argv );
 
 private:
 
@@ -102,13 +98,12 @@ private:
     double M_grid_step;
     bool M_show_grid_coord;
 
+    QPointF M_focus_point; //!< real coordinates
+
     // zoom
     double M_field_scale;
     bool M_zoomed;
     QPoint M_field_center; //!< field center point on the screen
-
-    // focus
-    QPointF M_focus_point; //!< real coordinates
 
     //! private access for singleton
     Options();
@@ -131,6 +126,7 @@ public:
     //
     // logplayer options
     //
+
 
     bool minimumMode() const
       {
@@ -326,6 +322,9 @@ public:
       {
           return ( y - M_field_center.y() ) / M_field_scale;
       }
+
+     void readSettings();
+     void writeSettings();
 };
 
 #endif

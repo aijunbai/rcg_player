@@ -111,17 +111,6 @@ ConfigDialog::createWidgets()
         frame->setLayout( layout );
         M_tab_widget->addTab( frame, tr( "Show" ) );
     }
-    // trace / move
-    {
-        QFrame * frame = new QFrame();
-        QVBoxLayout * layout = new QVBoxLayout();
-        layout->setSizeConstraint( QLayout::SetFixedSize );
-        layout->setMargin( 4 );
-        layout->setSpacing( 4 );
-
-        frame->setLayout( layout );
-        M_tab_widget->addTab( frame, tr( "Trace" ) );
-    }
 
     top_layout->addWidget( M_tab_widget );
     this->setLayout( top_layout );
@@ -568,3 +557,16 @@ ConfigDialog::editGridStep( const QString & text )
         emit configured();
     }
 }
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::setFocusPoint( const QPoint & point )
+{
+    Options::instance().setFocusPoint( point.x(), point.y() );
+
+    emit configured();
+}
+

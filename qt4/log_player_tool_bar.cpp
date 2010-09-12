@@ -188,25 +188,6 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
 
     this->addSeparator();
 
-    {
-        M_toggle_record_act
-            = new QAction( QIcon( QPixmap( rec_xpm ) ),
-                           tr( "Record" ), this );
-        M_toggle_record_act->setCheckable( true );
-        M_toggle_record_act->setEnabled( false );
-// #ifdef Q_WS_MAC
-//         M_toggle_record_act->setShortcut( Qt::META + Qt::Key_R );
-// #else
-//         M_toggle_record_act->setShortcut( Qt::CTRL + Qt::Key_R );
-// #endif
-        M_toggle_record_act->setStatusTip( tr( "Record.(" )
-                                           + M_toggle_record_act->shortcut().toString()
-                                           + tr( ")" ) );
-        connect( M_toggle_record_act, SIGNAL( triggered( bool ) ),
-                 this, SIGNAL( recordToggled( bool ) ) );
-        this->addAction( M_toggle_record_act );
-        main_win->addAction( M_toggle_record_act );
-    }
 
     // invisible actions
     {
@@ -233,26 +214,6 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
         //this->addAction( act );
         main_win->addAction( act );
     }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-LogPlayerToolBar::checkRecord( bool checked )
-{
-    M_toggle_record_act->setChecked( checked );
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-LogPlayerToolBar::enableRecord( bool checked )
-{
-    M_toggle_record_act->setEnabled( checked );
 }
 
 /*-------------------------------------------------------------------*/
