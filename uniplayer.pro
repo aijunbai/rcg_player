@@ -1,6 +1,7 @@
 
 TEMPLATE = subdirs
 SUBDIRS = rcg qt4
+CONFIG += Debug
 
 # Input
 DISPFILES += \
@@ -19,3 +20,4 @@ DISPFILES += \
              icons/rev.xpm \
              icons/rew.xpm \
              icons/stop.xpm
+
