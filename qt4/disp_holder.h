@@ -51,6 +51,9 @@ private:
     std::multimap< int, rcss::rcg::LineInfoT > M_line_map;
     std::multimap< int, rcss::rcg::CircleInfoT > M_circle_map;
 
+    std::map < int, std::pair<double, double> > M_scale_map;
+    std::map < int, std::pair<double, double> > M_focus_map;
+
     unsigned int M_size;
 
     // not used
@@ -89,6 +92,18 @@ public:
           return M_line_map;
       }
 
+    const
+    std::map< int, std::pair<double, double> > & scaleMap() const
+      {
+          return M_scale_map;
+      }
+
+    const
+    std::map< int, std::pair<double, double> > & focusMap() const
+      {
+          return M_focus_map;
+      }
+
 private:
     virtual
     void doHandleDrawClear( const int );
@@ -101,6 +116,13 @@ private:
     virtual
     void doHandleDrawCircleInfo( const int,
                                  const rcss::rcg::CircleInfoT & );
+
+    virtual
+    void doHandleScaleInfo(const int, const double, const double);
+
+    virtual
+    void doHandleFocusInfo(const int, const double, const double);
+
     virtual
     void doHandleEOF();
 };

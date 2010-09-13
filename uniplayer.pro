@@ -2,6 +2,8 @@
 TEMPLATE = subdirs
 SUBDIRS = rcg qt4 logger
 
+#CONFIG += Debug
+
 # Input
 DISPFILES += \
              icons/blank.xpm \

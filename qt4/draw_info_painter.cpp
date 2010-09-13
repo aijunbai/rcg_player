@@ -163,6 +163,15 @@ DrawInfoPainter::draw( QPainter & painter )
 
     painter.setBrush( Qt::NoBrush );
 
+    double scale_x = 1.0;
+    double scale_y = 1.0;
+
+    std::map< int, std::pair<double, double> >::const_iterator q = holder.scaleMap().find( current_time );
+    if (q != holder.scaleMap().end()) {
+        scale_x = q->second.first;
+        scale_y = q->second.second;
+    }
+
     //
     // draw point
     //
@@ -180,13 +189,13 @@ DrawInfoPainter::draw( QPainter & painter )
                     M_pen.setColor( col );
                     painter.setPen( M_pen );
 
-                    painter.drawRect( opt.screenX( p->second.x_ ) - 1,
-                                      opt.screenY( p->second.y_ ) - 1,
+                    painter.drawRect( opt.screenX( p->second.x_ * scale_x ) - 1,
+                                      opt.screenY( p->second.y_ * scale_y ) - 1,
                                       3, 3 );
 
                     painter.setFont( M_label_font );
-                    painter.drawText( opt.screenX( p->second.x_ ) - 1 + M_label_radius,
-                                    opt.screenY( p->second.y_ ) - 1,
+                    painter.drawText( opt.screenX( p->second.x_ * scale_x ) - 1 + M_label_radius,
+                                    opt.screenY( p->second.y_ * scale_y ) - 1,
                                     QString::fromAscii( p->second.label_.c_str() ) );
                 }
 
@@ -213,11 +222,12 @@ DrawInfoPainter::draw( QPainter & painter )
                     M_pen.setColor( col );
                     painter.setPen( M_pen );
 
-                    int r = opt.scale( c->second.r_ );
-                    painter.drawEllipse( opt.screenX( c->second.x_ ) - r,
-                                         opt.screenY( c->second.y_ ) - r,
-                                         r * 2,
-                                         r * 2 );
+                    int xr = opt.scale( c->second.r_ * fabs(scale_x) );
+                    int yr = opt.scale( c->second.r_ * fabs(scale_y) );
+                    painter.drawEllipse( opt.screenX( c->second.x_ * scale_x ) - xr,
+                                         opt.screenY( c->second.y_ * scale_y ) - yr,
+                                         xr * 2,
+                                         yr * 2 );
                 }
 
                 ++c;
@@ -243,10 +253,10 @@ DrawInfoPainter::draw( QPainter & painter )
                     M_pen.setColor( col );
                     painter.setPen( M_pen );
 
-                    painter.drawLine( opt.screenX( l->second.x1_ ),
-                                      opt.screenY( l->second.y1_ ),
-                                      opt.screenX( l->second.x2_ ),
-                                      opt.screenY( l->second.y2_ ) );
+                    painter.drawLine( opt.screenX( l->second.x1_ * scale_x ),
+                                      opt.screenY( l->second.y1_ * scale_y ),
+                                      opt.screenX( l->second.x2_ * scale_x ),
+                                      opt.screenY( l->second.y2_ * scale_y ) );
                 }
 
                 ++l;
@@ -254,5 +264,4 @@ DrawInfoPainter::draw( QPainter & painter )
             while ( l != end );
         }
     }
-
 }

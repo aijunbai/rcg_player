@@ -1,3 +1,5 @@
+#CONFIG += Debug
+
 TEMPLATE = app
 QT += network
 TARGET = uniplayer

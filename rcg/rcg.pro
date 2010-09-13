@@ -1,3 +1,4 @@
+#CONFIG += Debug
 
 TEMPLATE = lib
 TARGET = rcssrcgparser

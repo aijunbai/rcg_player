@@ -81,6 +81,16 @@ private:
           doHandleDrawLineInfo( time, l );
       }
 
+    void handleScaleInfo( const int time, const double x, const double y)
+    {
+        doHandleScaleInfo(time, x, y);
+    }
+
+    void handleFocusInfo( const int time, const double x, const double y)
+    {
+        doHandleFocusInfo(time, x, y);
+    }
+
     void handleEOF()
       {
           doHandleEOF();
@@ -101,6 +111,12 @@ protected:
     virtual
     void doHandleDrawLineInfo( const int,
                                const LineInfoT & ) = 0;
+
+    virtual
+    void doHandleScaleInfo(const int, const double, const double) = 0;
+
+    virtual
+    void doHandleFocusInfo(const int, const double, const double) = 0;
 
     virtual
     void doHandleEOF() = 0;

@@ -315,6 +315,94 @@ Parser::parseLine( const int n_line,
     {
         parseDrawLine( n_line, line );
     }
+    else if ( line.compare( 0, 7, "(scale " ) == 0 )
+    {
+        parseScaleLine( n_line, line );
+    }
+    else if ( line.compare( 0, 7, "(focus " ) == 0 )
+    {
+        parseFocusLine( n_line, line );
+    }
+
+    return true;
+}
+
+bool
+Parser::parseFocusLine( const int n_line,
+                       const std::string & line )
+{
+    // (focus <time> <x> <y>) 
+    const char * buf = line.c_str();
+
+    int n_read = 0;
+
+    // parse time
+    int time = 0;
+    if ( std::sscanf( buf, " (focus %d %n ",
+                      &time, &n_read ) != 1 )
+    {
+        std::cerr << n_line << ": error: "
+                  << "Illegal time info \"" << line << "\""
+                  << std::endl;
+        return false;
+    }
+    buf += n_read;
+
+    M_time = time;
+
+    // parse scale values
+    float x, y;
+    if ( std::sscanf( buf,
+                      "%f %f %n)",
+                      &x, &y, &n_read ) != 2 )
+    {
+        std::cerr << n_line << ": error: "
+                  << "Illegal focus info \"" << line << "\""
+                  << std::endl;
+        return false;
+    }
+
+    M_handler.handleFocusInfo( M_time, x, y);
+
+    return true;
+}
+
+bool
+Parser::parseScaleLine( const int n_line,
+                       const std::string & line )
+{
+    // (scale <time> <x> <y>) 
+    const char * buf = line.c_str();
+
+    int n_read = 0;
+
+    // parse time
+    int time = 0;
+    if ( std::sscanf( buf, " (scale %d %n ",
+                      &time, &n_read ) != 1 )
+    {
+        std::cerr << n_line << ": error: "
+                  << "Illegal time info \"" << line << "\""
+                  << std::endl;
+        return false;
+    }
+    buf += n_read;
+
+    M_time = time;
+
+    // parse scale values
+    float x, y;
+    if ( std::sscanf( buf,
+                      "%f %f %n)",
+                      &x, &y, &n_read ) != 2 )
+    {
+        std::cerr << n_line << ": error: "
+                  << "Illegal scale info \"" << line << "\""
+                  << std::endl;
+        return false;
+    }
+
+    M_handler.handleScaleInfo( M_time, x, y);
 
     return true;
 }
@@ -323,10 +411,10 @@ bool
 Parser::parseDrawLine( const int n_line,
                        const std::string & line )
 {
-    // ( draw <time> (clear))
-    // ( draw <time> (point <x> <y> "<color>"))
-    // ( draw <time> (circle <x> <y> <radius> "<color>"))
-    // ( draw <time> (line <sx> <sy> <ex> <ey> "<color>"))
+    // (draw <time> (clear))
+    // (draw <time> (point <x> <y> "<color>"))
+    // (draw <time> (circle <x> <y> <radius> "<color>"))
+    // (draw <time> (line <sx> <sy> <ex> <ey> "<color>"))
 
     const char * buf = line.c_str();
 
@@ -335,7 +423,7 @@ Parser::parseDrawLine( const int n_line,
     // parse time
 
     int time = 0;
-    if ( std::sscanf( buf, " ( draw %d %n ",
+    if ( std::sscanf( buf, " (draw %d %n ",
                       &time, &n_read ) != 1 )
     {
         std::cerr << n_line << ": error: "

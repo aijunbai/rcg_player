@@ -89,27 +89,18 @@ private:
 
     bool parseLine( std::istream & is );
 public:
-    // can be used by monitor client
     bool parseLine( const int n_line,
                     const std::string & line );
+
 private:
-    bool parseShowLine( const int n_line,
-                        const std::string & line );
     bool parseDrawLine( const int n_line,
                         const std::string & line );
-    bool parseMsgLine( const int n_line,
-                       const std::string & line );
-    bool parsePlayModeLine( const int n_line,
-                            const std::string & line );
-    bool parseTeamLine( const int n_line,
-                        const std::string & line );
-    bool parsePlayerTypeLine( const int n_line,
-                              const std::string & line );
-    bool parsePlayerParamLine( const int n_line,
-                               const std::string & line );
-    bool parseServerParamLine( const int n_line,
-                               const std::string & line );
 
+    bool parseScaleLine( const int n_line,
+                        const std::string & line );
+
+    bool parseFocusLine( const int n_line,
+                        const std::string & line );
     //
     // common
     //

@@ -127,6 +127,20 @@ DispHolder::doHandleDrawLineInfo( const int time,
     M_line_map.insert( std::pair< int, rcss::rcg::LineInfoT >( time, line ) );
 }
 
+void
+DispHolder::doHandleScaleInfo(const int time, const double x, const double y)
+{
+    M_size = std::max(M_size, uint(time));
+    M_scale_map[time] = std::make_pair(x, y);
+}
+
+void
+DispHolder::doHandleFocusInfo(const int time, const double x, const double y)
+{
+    M_size = std::max(M_size, uint(time));
+    M_focus_map[time] = std::make_pair(x, y);
+}
+
 /*-------------------------------------------------------------------*/
 /*!
 
