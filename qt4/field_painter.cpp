@@ -174,10 +174,10 @@ FieldPainter::drawLines( QPainter & painter ) const
     painter.setBrush( Qt::NoBrush );
 
     // set screen coordinates of field
-    int left_x   = opt.screenX( - 600.0);
-    int right_x  = opt.screenX( + 600.0);
-    int top_y    = opt.screenY( - 300.0);
-    int bottom_y = opt.screenY( + 300.0);
+    int left_x   = opt.screenX( - 666.0);
+    int right_x  = opt.screenX( + 666.0);
+    int top_y    = opt.screenY( - 333.0);
+    int bottom_y = opt.screenY( + 333.0);
 
     // side lines & goal lines
     painter.drawLine( left_x, top_y, right_x, top_y );
