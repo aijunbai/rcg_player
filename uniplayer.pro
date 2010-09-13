@@ -1,6 +1,6 @@
 
 TEMPLATE = subdirs
-SUBDIRS = rcg qt4
+SUBDIRS = rcg qt4 logger
 
 # Input
 DISPFILES += \
