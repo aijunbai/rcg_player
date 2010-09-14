@@ -41,35 +41,6 @@
 namespace rcss {
 namespace rcg {
 
-typedef boost::int16_t Int16;
-typedef boost::uint16_t UInt16;
-typedef boost::int32_t Int32;
-typedef boost::int32_t UInt32;
-
-const double SHOWINFO_SCALE = 16.0;
-const float SHOWINFO_SCALEF = 16.0f;
-const double SHOWINFO_SCALE2 = 65536.0;
-const float SHOWINFO_SCALE2F = 65536.0f;
-
-const int REC_OLD_VERSION = 1;
-const int REC_VERSION_2 = 2;
-const int REC_VERSION_3 = 3;
-const int REC_VERSION_4 = 4;
-const int REC_VERSION_5 = 5;
-const int DEFAULT_REC_VERSION = REC_VERSION_5;
-
-/*!
-  \enum DrawMode
-  \brief draw data types
- */
-enum DrawMode {
-    DrawClear = 0,
-    DrawPoint = 1,
-    DrawCircle = 2,
-    DrawLine = 3,
-};
-
-
 /*!
   \struct PointInfoT
   \brief point data for drawing

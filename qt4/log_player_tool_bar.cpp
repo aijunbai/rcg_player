@@ -50,7 +50,6 @@
 #include "icons/minus.xpm"
 #include "icons/ff.xpm"
 #include "icons/rew.xpm"
-#include "icons/rec.xpm"
 
 /*-------------------------------------------------------------------*/
 /*!
