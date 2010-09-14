@@ -1,4 +1,4 @@
-#CONFIG += Debug
+CONFIG += release
 
 TEMPLATE = app
 QT += network
@@ -59,7 +59,6 @@ win32 {
 
 # Input
 HEADERS += \
-	angle_deg.h \
 	config_dialog.h \
 	disp_holder.h \
 	draw_info_painter.h \
@@ -73,7 +72,6 @@ HEADERS += \
 	options.h \
 
 SOURCES += \
-	angle_deg.cpp \
 	config_dialog.cpp \
 	disp_holder.cpp \
 	draw_info_painter.cpp \

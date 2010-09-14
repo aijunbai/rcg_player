@@ -1,5 +1,3 @@
-#CONFIG += Debug
-
 TEMPLATE = lib
 TARGET = rcssrcgparser
 DESTDIR = ../lib

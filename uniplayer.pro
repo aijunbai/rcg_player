@@ -1,8 +1,6 @@
-
 TEMPLATE = subdirs
 SUBDIRS = rcg qt4 logger
-
-#CONFIG += Debug
+CONFIG += release
 
 # Input
 DISPFILES += \
