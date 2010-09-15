@@ -310,12 +310,10 @@ Options::parseCmdLine( int argc,
                        char ** argv )
 {
 #ifdef HAVE_BOOST_PROGRAM_OPTIONS
-    namespace po = boost::program_options;
-
     std::string geometry;
 //     std::string canvas_size;
 
-    po::options_description visibles( "Allowed options:" );
+    boost::program_options::options_description visibles( "Allowed options:" );
 
     visibles.add_options()
         ( "help,h",
@@ -324,59 +322,59 @@ Options::parseCmdLine( int argc,
           "print version information." )
         // logplayer options
         ( "minimum-mode",
-          po::bool_switch( &M_minimum_mode )->default_value( M_minimum_mode ),
+          boost::program_options::bool_switch( &M_minimum_mode )->default_value( M_minimum_mode ),
           "start logplayer with minimum mode." )
         ( "timer-interval",
-          po::value< int >( &M_timer_interval )->default_value( DEFAULT_TIMER_INTERVAL ),
+          boost::program_options::value< int >( &M_timer_interval )->default_value( DEFAULT_TIMER_INTERVAL ),
           "set the logplayer timer interval." )
         // window options
         ( "geometry",
-          po::value< std::string >( &geometry )->default_value( "" ),
+          boost::program_options::value< std::string >( &geometry )->default_value( "" ),
           "specifies the window geometry ([WxH][+X+Y]). e.g. --geometry=1024x768+1+1" )
 //         ( "canvas-size",
-//           po::value< std::string >( &canvas_size )->default_value( "" ),
+//           boost::program_options::value< std::string >( &canvas_size )->default_value( "" ),
 //           "specifies the canvas size(WxH). e.g. --canvas-size=1024x768" )
         ( "maximize",
-          po::bool_switch( &M_maximize )->default_value( M_maximize ),
+          boost::program_options::bool_switch( &M_maximize )->default_value( M_maximize ),
           "start with a maximized window." )
         ( "full-screen",
-          po::bool_switch( &M_full_screen )->default_value( M_full_screen ),
+          boost::program_options::bool_switch( &M_full_screen )->default_value( M_full_screen ),
           "start with a full screen window." )
         ( "hide-menu-bar",
-          po::bool_switch( &M_hide_menu_bar )->default_value( M_hide_menu_bar ),
+          boost::program_options::bool_switch( &M_hide_menu_bar )->default_value( M_hide_menu_bar ),
           "start without a menu bar." )
         ( "hide-tool-bar",
-          po::bool_switch( &M_hide_tool_bar )->default_value( M_hide_tool_bar ),
+          boost::program_options::bool_switch( &M_hide_tool_bar )->default_value( M_hide_tool_bar ),
           "start without a tool bar." )
         ( "hide-status-bar",
-          po::bool_switch( &M_hide_status_bar )->default_value( M_hide_status_bar ),
+          boost::program_options::bool_switch( &M_hide_status_bar )->default_value( M_hide_status_bar ),
           "start without a status bar." )
         // view options
         ( "anti-aliasing",
-          po::value< bool >( &M_anti_aliasing )->default_value( true, "on" ),
+          boost::program_options::value< bool >( &M_anti_aliasing )->default_value( true, "on" ),
           "show anti-aliased objects." )
         ( "show-draw-info",
-          po::value< bool >( &M_show_draw_info )->default_value( true, "on" ),
+          boost::program_options::value< bool >( &M_show_draw_info )->default_value( true, "on" ),
           "show team draw information." )
         ( "show-grid-coord",
-          po::value< bool >( &M_show_grid_coord )->default_value( false, "off" ),
+          boost::program_options::value< bool >( &M_show_grid_coord )->default_value( false, "off" ),
           "show grid line coordinate value." )
         ( "grid-step",
-          po::value< double >( &M_grid_step )->default_value( 0.0, "0.0" ),
+          boost::program_options::value< double >( &M_grid_step )->default_value( 0.0, "0.0" ),
           "set a grid step size." )
         ;
 
-    po::options_description invisibles( "Invisibles" );
+    boost::program_options::options_description invisibles( "Invisibles" );
     invisibles.add_options()
         ( "game-log-file",
-          po::value< std::string >( &M_game_log_file )->default_value( "" ),
+          boost::program_options::value< std::string >( &M_game_log_file )->default_value( "" ),
           "set the path to Game Log file(.rcg) to be opened.")
         ;
 
-    po::positional_options_description pdesc;
+    boost::program_options::positional_options_description pdesc;
     pdesc.add( "game-log-file", 1 );
 
-    po::options_description all_desc( "All options:" );
+    boost::program_options::options_description all_desc( "All options:" );
     all_desc.add( visibles ).add( invisibles );
 
 
@@ -384,11 +382,11 @@ Options::parseCmdLine( int argc,
     bool version = false;
     try
     {
-        po::variables_map vm;
-        po::command_line_parser parser( argc, argv );
+        boost::program_options::variables_map vm;
+        boost::program_options::command_line_parser parser( argc, argv );
         parser.options( all_desc ).positional( pdesc );
-        po::store( parser.run(), vm );
-        po::notify( vm );
+        boost::program_options::store( parser.run(), vm );
+        boost::program_options::notify( vm );
 
         help = vm.count( "help" );
         version = vm.count( "version" );
