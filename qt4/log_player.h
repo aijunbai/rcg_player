@@ -53,9 +53,6 @@ private:
     //! if true, replay direction is forward
     bool M_forward;
 
-    //! if true, latest monitor view data is drawn.
-    bool M_live_mode;
-
     // not used
     LogPlayer();
     LogPlayer( const LogPlayer & );
@@ -99,12 +96,7 @@ public slots:
     void accelerate();
 
     void goToIndex( int index );
-
     void goToCycle( int cycle );
-
-    void showLive();
-
-    void setLiveMode();
 
 signals:
 

@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /*!
-	\file main_data.h
-	\brief main data class Header File.
+    \file main_data.h
+    \brief main data class Header File.
 */
 
 /*
@@ -84,6 +84,8 @@ public:
 
     bool setIndex( const int index );
     bool setCycle( const int cycle );
+
+    void updateFocus();
 
 };
 

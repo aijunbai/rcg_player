@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /*!
-	\file main_data.cpp
-	\brief main data class Source File.
+    \file main_data.cpp
+    \brief main data class Source File.
 */
 
 /*
@@ -94,6 +94,7 @@ MainData::clear()
 {
     M_index = 0;
     M_disp_holder.clear();
+    updateFocus();
 }
 
 /*-------------------------------------------------------------------*/
@@ -118,7 +119,6 @@ MainData::openRCG( const QString & file_path,
     }
 
     clear();
-
 
     QTime timer;
     timer.start();
@@ -148,6 +148,10 @@ MainData::openRCG( const QString & file_path,
               << std::endl;
 
     Options::instance().setGameLogFile( file_path.toStdString() );
+
+    M_index = 0;
+    updateFocus();
+
     return true;
 }
 
@@ -159,6 +163,7 @@ bool
 MainData::setIndexFirst()
 {
     M_index = 0;
+    updateFocus();
 
     return ( ! M_disp_holder.empty() );
 }
@@ -173,10 +178,14 @@ MainData::setIndexLast()
     if ( M_disp_holder.size() == 0)
     {
         M_index = 0;
+        updateFocus();
+
         return false;
     }
 
     M_index = M_disp_holder.size() - 1;
+    updateFocus();
+
     return true;
 }
 
@@ -190,6 +199,8 @@ MainData::setIndexStepBack()
     if ( 0 < M_index )
     {
         --M_index;
+        updateFocus();
+
         return true;
     }
     else
@@ -208,6 +219,8 @@ MainData::setIndexStepForward()
     if ( M_index < dispHolder().size() - 1 )
     {
         ++M_index;
+        updateFocus();
+
         return true;
     }
     else
@@ -243,6 +256,7 @@ MainData::setIndex( const int index )
     }
 
     M_index = idx;
+    updateFocus();
 
     return true;
 }
@@ -263,5 +277,32 @@ MainData::setCycle( const int cycle )
     }
 
     M_index = index;
+    updateFocus();
+
     return true;
+}
+
+void
+MainData::updateFocus()
+{
+    const int current_time = index();
+
+    const DispHolder & holder = dispHolder();
+    std::map< int, std::pair<double, double> >::const_iterator p = holder.focusMap().find( current_time );
+
+    if ( p != holder.focusMap().end() ) {
+        double x = p->second.first;
+        double y = p->second.second;
+
+        std::map< int, std::pair<double, double> >::const_iterator q = holder.scaleMap().find( current_time );
+        if (q != holder.scaleMap().end()) {
+            double scale_x = q->second.first;
+            double scale_y = q->second.second;
+
+            x *= scale_x;
+            y *= scale_y;
+        }
+
+        Options::instance().setFocusPointReal(x, y);
+    }
 }

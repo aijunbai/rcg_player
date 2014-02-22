@@ -53,7 +53,6 @@ LogPlayer::LogPlayer( MainData & main_data,
     , M_main_data( main_data )
     , M_timer( new QTimer( this ) )
     , M_forward( true )
-    , M_live_mode( false )
 {
     connect( M_timer, SIGNAL( timeout() ),
              this, SLOT( handleTimer() ) );
@@ -91,16 +90,6 @@ LogPlayer::handleTimer()
 /*!
 
 */
-bool
-LogPlayer::isLiveMode() const
-{
-    return M_live_mode;
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
 void
 LogPlayer::stepBackImpl()
 {
@@ -128,7 +117,6 @@ LogPlayer::stepForwardImpl()
     else
     {
         M_timer->stop();
-
     }
 }
 
@@ -139,7 +127,6 @@ LogPlayer::stepForwardImpl()
 void
 LogPlayer::stepBack()
 {
-    M_live_mode = false;
     M_forward = false;
     M_timer->stop();
 
@@ -153,7 +140,6 @@ LogPlayer::stepBack()
 void
 LogPlayer::stepForward()
 {
-    M_live_mode = false;
     M_forward = true;
     M_timer->stop();
 
@@ -167,8 +153,6 @@ LogPlayer::stepForward()
 void
 LogPlayer::playOrStop()
 {
-    M_live_mode = false;
-
     if ( M_timer->isActive() )
     {
         M_timer->stop();
@@ -190,7 +174,6 @@ LogPlayer::playOrStop()
 void
 LogPlayer::stop()
 {
-    M_live_mode = false;
     M_timer->stop();
 }
 
@@ -201,7 +184,6 @@ LogPlayer::stop()
 void
 LogPlayer::playBack()
 {
-    M_live_mode = false;
     M_forward = false;
 
     if ( ! M_timer->isActive()
@@ -218,7 +200,6 @@ LogPlayer::playBack()
 void
 LogPlayer::playForward()
 {
-    M_live_mode = false;
     M_forward = true;
 
     if ( ! M_timer->isActive()
@@ -247,7 +228,6 @@ LogPlayer::accelerateBack()
         if ( interval < 10 ) interval = 10;
     }
 
-    M_live_mode = false;
     M_forward = false;
     M_timer->start( interval );
 }
@@ -271,7 +251,6 @@ LogPlayer::accelerateForward()
         if ( interval < 10 ) interval = 10;
     }
 
-    M_live_mode = false;
     M_forward = true;
     M_timer->start( interval );
 }
@@ -285,7 +264,6 @@ LogPlayer::goToFirst()
 {
     if ( M_main_data.setIndexFirst() )
     {
-        M_live_mode = false;
         M_timer->stop();
 
         emit updated();
@@ -301,7 +279,6 @@ LogPlayer::goToLast()
 {
     if ( M_main_data.setIndexLast() )
     {
-        M_live_mode = false;
         M_timer->stop();
 
         emit updated();
@@ -347,9 +324,7 @@ LogPlayer::goToIndex( int index )
 {
     if ( M_main_data.setIndex( index ) )
     {
-        M_live_mode = false;
-        //M_timer->stop();
-
+        M_timer->stop();
         emit updated();
     }
 }
@@ -363,38 +338,7 @@ LogPlayer::goToCycle( int cycle )
 {
     if ( M_main_data.setCycle( cycle ) )
     {
-        M_live_mode = false;
-        //M_timer->stop();
-
-        emit updated();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-LogPlayer::showLive()
-{
-    if ( M_main_data.setIndexLast() )
-    {
         M_timer->stop();
-
         emit updated();
     }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-LogPlayer::setLiveMode()
-{
-    M_main_data.setIndexLast();
-    M_live_mode = true;
-    M_timer->stop();
-
-    //emit updated();
 }

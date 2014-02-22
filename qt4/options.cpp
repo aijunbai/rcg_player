@@ -259,8 +259,7 @@ Options::unzoom()
                      || focusPoint().y() != 0.0 )
     {
         M_zoomed = false;
-        M_focus_point.setX( 0.0 );
-        M_focus_point.setY( 0.0 );
+        M_focus_point = M_last_real_focus_point;
 
         int temp_width = M_canvas_width;
         M_canvas_width += 1;

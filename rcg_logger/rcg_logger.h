@@ -13,180 +13,188 @@
 #include <vector>
 
 /**
- * RCG format logger
+ * RCG format logger (should be played with rcg_player)
  */
 class RCGLogger {
 public:
-	enum Color {
-		Red,
-		Blue,
-		Green,
-		Navy,
-		Orange,
-		Cyan,
-		Purple,
-		White,
-		Black,
-		Yellow,
-		Olive
-	};
+  enum Color {
+    Orange,
+    Cyan,
+    Purple,
+    Yellow,
+    Olive,
+    Navy,
+    Green,
+    Gray,
+    Red,
+    Blue,
+    White,
+    Black,
 
-	struct Vector {
-		double x_;
-		double y_;
+    Color_Max
+  };
 
-		Vector(const double & x, const double & y): x_(x), y_(y) {
+  struct Vector {
+    float x_;
+    float y_;
 
-		}
+    Vector(const float & x, const float & y): x_(x), y_(y) {
 
-		Vector operator-() const { return Vector(-x_, -y_); }
-		Vector operator+(const Vector &a) const { return Vector(x_ + a.x_, y_ + a.y_); }
-		Vector operator-(const Vector &a) const { return Vector(x_ - a.x_, y_ - a.y_); }
-		Vector operator*(const double & a) const { return Vector(x_ * a, y_ * a); }
-		Vector operator/(double a) const { return Vector(x_ / a, y_ / a); }
+    }
 
-		const double & X() const { return x_; }
-		const double & Y() const { return y_; }
-	};
+    Vector operator-() const { return Vector(-x_, -y_); }
+    Vector operator+(const Vector &a) const { return Vector(x_ + a.x_, y_ + a.y_); }
+    Vector operator-(const Vector &a) const { return Vector(x_ - a.x_, y_ - a.y_); }
+    Vector operator*(const float & a) const { return Vector(x_ * a, y_ * a); }
+    Vector operator/(float a) const { return Vector(x_ / a, y_ / a); }
 
-	class Rectangular
-	{
-	public:
-		Rectangular(): left_(0.0), right_(0.0), top_(0.0), bottom_(0.0) {}
-		Rectangular(const double & left, const double & right, const double & top, const double & bottom): left_(left), right_(right), top_(top), bottom_(bottom) {}
+    const float & X() const { return x_; }
+    const float & Y() const { return y_; }
+  };
 
-		const double & Left() const { return left_; }
-		const double & Right() const { return right_; }
-		const double & Top() const { return top_; }
-		const double & Bottom() const { return bottom_; }
+  class Rectangular
+  {
+  public:
+    Rectangular(): left_(0.0), right_(0.0), top_(0.0), bottom_(0.0) {}
+    Rectangular(const float & left, const float & right, const float & top, const float & bottom): left_(left), right_(right), top_(top), bottom_(bottom) {}
 
-		void SetLeft(const double & left) { left_ = left; }
-		void SetRight(const double & right) { right_ = right; }
-		void SetTop(const double & top) { top_ = top; }
-		void SetBottom(const double & bottom) { bottom_ = bottom; }
+    const float & Left() const { return left_; }
+    const float & Right() const { return right_; }
+    const float & Top() const { return top_; }
+    const float & Bottom() const { return bottom_; }
 
-		Vector TopLeftCorner() const { return Vector(left_, top_); }
-		Vector TopRightCorner() const { return Vector(right_, top_); }
-		Vector BottomLeftCorner() const { return Vector(left_, bottom_); }
-		Vector BottomRightCorner() const { return Vector(right_, bottom_); }
+    void SetLeft(const float & left) { left_ = left; }
+    void SetRight(const float & right) { right_ = right; }
+    void SetTop(const float & top) { top_ = top; }
+    void SetBottom(const float & bottom) { bottom_ = bottom; }
 
-	public:
-		double left_; // ¾ØÐÎ×ó±ß
-		double right_; // ¾ØÐÎÓÒ±ß
-		double top_; // ¾ØÐÎÉÏ±ß
-		double bottom_; // ¾ØÐÎÏÂ±ß
-	};
+    Vector TopLeftCorner() const { return Vector(left_, top_); }
+    Vector TopRightCorner() const { return Vector(right_, top_); }
+    Vector BottomLeftCorner() const { return Vector(left_, bottom_); }
+    Vector BottomRightCorner() const { return Vector(right_, bottom_); }
 
-private:
-	struct ItemShape {
-		Color line_color;
-
-		const char *color() const {
-			switch (line_color){
-			case Red: return "red";
-			case Blue: return "blue";
-			case Green: return "green";
-			case Navy: return "navy";
-			case Orange: return "orange";
-			case Cyan: return "cyan";
-			case Purple: return "purple";
-			case White: return "white";
-			case Black: return "black";
-			case Yellow: return "yellow";
-			case Olive: return "olive";
-			}
-			return "black";
-		}
-
-		ItemShape (Color color){
-			line_color = color;
-		}
-	};
-
-	struct PointShape: public ItemShape {
-		double x, y;
-		std::string comment;
-
-		PointShape (const Vector & point, Color color, const char* cmt = 0): ItemShape(color){
-			x = point.X();
-			y = point.Y();
-			if (cmt)
-			{
-				comment.assign(cmt);
-			}
-		};
-
-		friend std::ostream& operator<<(std::ostream &os, PointShape &point) {
-			return os << "(point " << point.x << ' ' << point.y << ' ' << "\"" << point.color() << "\" "<<point.comment<<")";
-		}
-	};
-
-	struct LineShape: public ItemShape {
-		double x1, y1;
-		double x2, y2;
-		int width;
-
-		LineShape (const Vector & from, const Vector & to, Color color): ItemShape(color){
-			x1 = from.X();
-			y1 = from.Y();
-			x2 = to.X();
-			y2 = to.Y();
-		};
-
-		friend std::ostream& operator<<(std::ostream &os, const LineShape &line) {
-			return os << "(line " << line.x1 << ' ' << line.y1 << ' ' << line.x2 << ' ' << line.y2 << " \"" << line.color() << "\")";
-		}
-	};
-
-	struct CircleShape: public ItemShape {
-		double x, y;
-		double radius;
-
-		CircleShape (const Vector & center, const double & r, Color color): ItemShape(color){
-			x = center.X();
-			y = center.Y();
-			radius = r;
-		};
-
-		friend std::ostream& operator<<(std::ostream &os, CircleShape &circle) {
-			return os << "(circle " << circle.x << ' ' << circle.y << ' ' << circle.radius << " \"" << circle.color() << "\")";
-		}
-	};
-
-public:
-	void AddPoint(const Vector & point, const char* comment = 0, Color color = Red) { points_.push_back(PointShape(point, color, comment)); }
-	void AddLine(const Vector & origin, const Vector & target, Color color = Yellow) { lines_.push_back(LineShape(origin, target, color)); }
-	void AddCircle(const Vector & origin, const double & radius, Color color = White) { circles_.push_back(CircleShape(origin, radius, color)); }
-
-public:
-	RCGLogger(const char *file_name): time_(0), focus_(0.0, 0.0), scale_x_(1.0), scale_y_(1.0) {
-		fout.open(file_name);
-	}
-
-	~RCGLogger() {
-		fout.close();
-	}
-
-	void Flush();
-
-	void LogLine(const Vector & begin, const Vector & end, Color color, const char* comment);
-	void LogCircle(const Vector & o, const double & r, Color color);
-	void LogRectangular(const Rectangular & rect, Color color);
-
-	void Scale(double x, double y);
-	void Focus(Vector focus);
+  public:
+    float left_;
+    float right_;
+    float top_;
+    float bottom_;
+  };
 
 private:
-	std::ofstream fout;
-	int time_;
+  struct ItemShape {
+    Color line_color;
 
-	std::vector<PointShape> points_;
-	std::vector<LineShape> lines_;
-	std::vector<CircleShape> circles_;
+    const char *color() const {
+      switch (line_color) {
+      case Red: return "red";
+      case Blue: return "blue";
+      case Green: return "green";
+      case Navy: return "navy";
+      case Orange: return "orange";
+      case Cyan: return "cyan";
+      case Purple: return "purple";
+      case White: return "white";
+      case Black: return "black";
+      case Yellow: return "yellow";
+      case Olive: return "olive";
+      case Gray: return "gray";
+      default: return "black";
+      }
 
-	Vector focus_;
-	double scale_x_;
-	double scale_y_;
+      return "black";
+    }
+
+    ItemShape (Color color){
+      line_color = color;
+    }
+  };
+
+  struct PointShape: public ItemShape {
+    float x, y;
+    std::string comment;
+
+    PointShape (float x_, float y_, Color color, const char* cmt = 0): ItemShape(color), x(x_), y(y_) {
+      if (cmt) {
+        comment.assign(std::string("@") + cmt);
+      }
+    };
+
+    friend std::ostream& operator<<(std::ostream &os, PointShape &point) {
+      return os << "(point " << point.x << ' ' << point.y << ' ' << "\"" << point.color() << "\" "<<point.comment<<")";
+    }
+  };
+
+  struct LineShape: public ItemShape {
+    float x1, y1;
+    float x2, y2;
+
+    LineShape (float x1_, float y1_, float x2_, float y2_, Color color):
+       ItemShape(color), x1(x1_), y1(y1_), x2(x2_), y2(y2_)
+    {
+    };
+
+    friend std::ostream& operator<<(std::ostream &os, const LineShape &line) {
+      return os << "(line " << line.x1 << ' ' << line.y1 << ' ' << line.x2 << ' ' << line.y2 << " \"" << line.color() << "\")";
+    }
+  };
+
+  struct CircleShape: public ItemShape {
+    float x, y;
+    float radius;
+
+    CircleShape (float x_, float y_, float r, Color color): ItemShape(color), x(x_), y(y_), radius(r) {
+    };
+
+    friend std::ostream& operator<<(std::ostream &os, CircleShape &circle) {
+      return os << "(circle " << circle.x << ' ' << circle.y << ' ' << circle.radius << " \"" << circle.color() << "\")";
+    }
+  };
+
+public:
+  void AddPoint(float x, float y, Color color = Red, const char* comment = 0) {
+    points_.push_back(PointShape(x, y, color, comment));
+  }
+
+  void AddLine(float x1, float y1, float x2, float y2, Color color = Yellow) {
+    lines_.push_back(LineShape(x1, y1, x2, y2, color));
+  }
+
+  void AddCircle(float x, float y, const float & radius, Color color = White) {
+    circles_.push_back(CircleShape(x, y, radius, color));
+  }
+
+public:
+  RCGLogger(const char *file_name): time_(0), focus_(0.0, 0.0), scale_x_(1.0), scale_y_(1.0) {
+    std::string file = file_name;
+    file += ".rcg";
+
+    fout.open(file.c_str());
+  }
+
+  ~RCGLogger() {
+    fout.close();
+  }
+
+  void Flush();
+
+  void LogLine(float x1, float y1, float x2, float y2, Color color, const char* comment = 0);
+  void LogCircle(float x, float y, float r, Color color);
+  void LogRectangular(const float left, const float right, const float top, const float bottom, Color color);
+
+  void Scale(float x, float y);
+  void Focus(float x, float y);
+
+private:
+  std::ofstream fout;
+  int time_;
+
+  std::vector<PointShape> points_;
+  std::vector<LineShape> lines_;
+  std::vector<CircleShape> circles_;
+
+  Vector focus_;
+  float scale_x_;
+  float scale_y_;
 };
 
 #endif /* LOGGER_H_ */

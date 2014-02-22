@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /*!
-	\file field_canvas.h
-	\brief field canvas class Header File.
+    \file field_canvas.h
+    \brief field canvas class Header File.
 */
 
 /*
@@ -60,7 +60,7 @@ class FieldPainter;
 
 //! main soccer field canvas class
 class FieldCanvas
-		:
+        :
 #ifdef USE_GLWIDGET
     public QGLWidget
 #else
@@ -119,11 +119,9 @@ private:
 
     void drawMouseMeasure( QPainter & painter );
 
-    void updateFocus();
-
 protected:
 
-	bool event ( QEvent * event);
+    bool event ( QEvent * event);
     void mouseDoubleClickEvent( QMouseEvent * event );
     void mousePressEvent( QMouseEvent * event );
     void mouseReleaseEvent( QMouseEvent * event );

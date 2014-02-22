@@ -13,5 +13,5 @@ do_qmake rcg_logger
 do_qmake qt4
 
 qmake
-make
+make -j5
 

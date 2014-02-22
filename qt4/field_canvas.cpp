@@ -223,41 +223,6 @@ FieldCanvas::paintEvent( QPaintEvent * )
 /*!
 
 */
-void
-FieldCanvas::updateFocus()
-{
-    const int current_time = M_main_data.index();
-
-    if (current_time > 0 && !Options::instance().timer()->isActive()) {
-        return;
-    }
-
-    if (M_mouse_state[0].isDragged()) return;
-
-    const DispHolder & holder = M_main_data.dispHolder();
-    std::map< int, std::pair<double, double> >::const_iterator p = holder.focusMap().find( current_time );
-
-    if ( p != holder.focusMap().end() ) {
-        double x = p->second.first;
-        double y = p->second.second;
-
-        std::map< int, std::pair<double, double> >::const_iterator q = holder.scaleMap().find( current_time );
-        if (q != holder.scaleMap().end()) {
-            double scale_x = q->second.first;
-            double scale_y = q->second.second;
-
-            x *= scale_x;
-            y *= scale_y;
-        }
-
-        Options::instance().setFocusPointReal(x, y);
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
 bool
 FieldCanvas::event( QEvent * event)
 {
@@ -443,10 +408,8 @@ FieldCanvas::mouseMoveEvent( QMouseEvent * event )
 void
 FieldCanvas::draw( QPainter & painter )
 {
-    updateFocus();
     // update field scale and related things
     Options::instance().updateFieldSize( this->width(), this->height() );
-
 
     M_field_painter->draw( painter );
 
