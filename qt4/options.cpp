@@ -322,32 +322,29 @@ Options::parseCmdLine( int argc,
           "print version information." )
         // logplayer options
         ( "minimum-mode",
-          boost::program_options::bool_switch( &M_minimum_mode )->default_value( M_minimum_mode ),
+          boost::program_options::bool_switch( &M_minimum_mode ),
           "start logplayer with minimum mode." )
         ( "timer-interval",
-          boost::program_options::value< int >( &M_timer_interval )->default_value( DEFAULT_TIMER_INTERVAL ),
+          boost::program_options::value< int >( &M_timer_interval ),
           "set the logplayer timer interval." )
         // window options
         ( "geometry",
           boost::program_options::value< std::string >( &geometry )->default_value( "" ),
           "specifies the window geometry ([WxH][+X+Y]). e.g. --geometry=1024x768+1+1" )
-//         ( "canvas-size",
-//           boost::program_options::value< std::string >( &canvas_size )->default_value( "" ),
-//           "specifies the canvas size(WxH). e.g. --canvas-size=1024x768" )
         ( "maximize",
-          boost::program_options::bool_switch( &M_maximize )->default_value( M_maximize ),
+          boost::program_options::bool_switch( &M_maximize ),
           "start with a maximized window." )
         ( "full-screen",
-          boost::program_options::bool_switch( &M_full_screen )->default_value( M_full_screen ),
+          boost::program_options::bool_switch( &M_full_screen ),
           "start with a full screen window." )
         ( "hide-menu-bar",
-          boost::program_options::bool_switch( &M_hide_menu_bar )->default_value( M_hide_menu_bar ),
+          boost::program_options::bool_switch( &M_hide_menu_bar ),
           "start without a menu bar." )
         ( "hide-tool-bar",
-          boost::program_options::bool_switch( &M_hide_tool_bar )->default_value( M_hide_tool_bar ),
+          boost::program_options::bool_switch( &M_hide_tool_bar ),
           "start without a tool bar." )
         ( "hide-status-bar",
-          boost::program_options::bool_switch( &M_hide_status_bar )->default_value( M_hide_status_bar ),
+          boost::program_options::bool_switch( &M_hide_status_bar ),
           "start without a status bar." )
         // view options
         ( "anti-aliasing",
@@ -481,25 +478,6 @@ Options::parseCmdLine( int argc,
                       << "]" << std::endl;
         }
     }
-
-//     if ( ! canvas_size.empty() )
-//     {
-//         int w = -1, h = -1;
-//         if ( std::sscanf( canvas_size.c_str(),
-//                           " %d x %d ",
-//                           &w, &h ) == 2
-//              && w > 1
-//              && h > 1 )
-//         {
-//             M_canvas_width = w;
-//             M_canvas_height = h;
-//         }
-//         else
-//         {
-//             std::cerr << "Illegal canvas size format [" << canvas_size
-//                       << "]" << std::endl;
-//         }
-//     }
 #endif
 
     return true;
