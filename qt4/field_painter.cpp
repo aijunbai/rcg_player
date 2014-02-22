@@ -167,25 +167,9 @@ FieldPainter::drawBackGround( QPainter & painter ) const
 void
 FieldPainter::drawLines( QPainter & painter ) const
 {
-    const Options & opt = Options::instance();
-
     // set paint styles
     painter.setPen( M_line_pen );
     painter.setBrush( Qt::NoBrush );
-
-    // set screen coordinates of field
-    int left_x   = opt.screenX( - 666.0);
-    int right_x  = opt.screenX( + 666.0);
-    int top_y    = opt.screenY( - 333.0);
-    int bottom_y = opt.screenY( + 333.0);
-
-    // side lines & goal lines
-    painter.drawLine( left_x, top_y, right_x, top_y );
-    painter.drawLine( right_x, top_y, right_x, bottom_y );
-    painter.drawLine( right_x, bottom_y, left_x, bottom_y );
-    painter.drawLine( left_x, bottom_y, left_x, top_y );
-    painter.drawLine( left_x, opt.screenY(0), right_x, opt.screenY(0) );
-    painter.drawLine( opt.screenX(0), bottom_y, opt.screenX(0), top_y);
 }
 
 /*-------------------------------------------------------------------*/

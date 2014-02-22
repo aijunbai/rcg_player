@@ -5,20 +5,20 @@
  *      Author: baj
  */
 
-#include "logger.h"
+#include "rcg_logger.h"
 
-void Logger::LogLine(const Vector & begin, const Vector & end, Logger::Color color, const char* comment)
+void RCGLogger::LogLine(const Vector & begin, const Vector & end, RCGLogger::Color color, const char* comment)
 {
 	AddPoint(end, comment, color);
 	AddLine(begin, end, color);
 }
 
-void Logger::LogCircle(const Vector & o, const double & r, Logger::Color color)
+void RCGLogger::LogCircle(const Vector & o, const double & r, RCGLogger::Color color)
 {
 	AddCircle(o, r, color);
 }
 
-void Logger::LogRectangular(const Rectangular & rect, Logger::Color color)
+void RCGLogger::LogRectangular(const Rectangular & rect, RCGLogger::Color color)
 {
 	AddLine(rect.TopLeftCorner(), rect.TopRightCorner(), color);
 	AddLine(rect.TopLeftCorner(), rect.BottomLeftCorner(), color);
@@ -26,7 +26,7 @@ void Logger::LogRectangular(const Rectangular & rect, Logger::Color color)
 	AddLine(rect.BottomRightCorner(), rect.TopRightCorner(), color);
 }
 
-void Logger::Flush()
+void RCGLogger::Flush()
 {
 	if (!fout.good()) return;
 
@@ -58,13 +58,13 @@ void Logger::Flush()
 	time_ += 1;
 }
 
-void Logger::Scale(double x, double y)
+void RCGLogger::Scale(double x, double y)
 {
 	scale_x_ = x;
 	scale_y_ = y;
 }
 
-void Logger::Focus(Vector focus)
+void RCGLogger::Focus(Vector focus)
 {
 	focus_ = focus;
 }

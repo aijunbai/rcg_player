@@ -1,5 +1,5 @@
 TEMPLATE = subdirs
-SUBDIRS = rcg qt4 logger
+SUBDIRS = rcg qt4 rcg_logger
 CONFIG += release
 
 # Input

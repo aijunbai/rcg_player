@@ -13,7 +13,7 @@ CONFIG -= qt
 
 # Input
 HEADERS += \
-    logger.h \
+    rcg_logger.h \
 
 SOURCES += \
-    logger.cpp \
+    rcg_logger.cpp \

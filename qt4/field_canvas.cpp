@@ -206,9 +206,7 @@ FieldCanvas::paintEvent( QPaintEvent * )
 
     if ( Options::instance().antiAliasing() )
     {
-        painter.setRenderHint( QPainter::Antialiasing );
-        // for QGLWidget
-        //painter.setRenderHint( QPainter::HighQualityAntialiasing );
+         painter.setRenderHint( QPainter::Antialiasing );
     }
 
     draw( painter );
@@ -228,12 +226,17 @@ FieldCanvas::paintEvent( QPaintEvent * )
 void
 FieldCanvas::updateFocus()
 {
+    const int current_time = M_main_data.index();
+
+    if (current_time > 0 && !Options::instance().timer()->isActive()) {
+        return;
+    }
+
     if (M_mouse_state[0].isDragged()) return;
 
-    const int current_time = M_main_data.index();
     const DispHolder & holder = M_main_data.dispHolder();
     std::map< int, std::pair<double, double> >::const_iterator p = holder.focusMap().find( current_time );
-    
+
     if ( p != holder.focusMap().end() ) {
         double x = p->second.first;
         double y = p->second.second;
@@ -247,10 +250,7 @@ FieldCanvas::updateFocus()
             y *= scale_y;
         }
 
-        QPointF focus = Options::instance().focusPoint();
-        if (fabs(x - focus.x()) > width() * 0.5 || fabs(y - focus.y()) > height() * 0.5) {
-            Options::instance().setFocusPointReal(x, y);
-        }
+        Options::instance().setFocusPointReal(x, y);
     }
 }
 

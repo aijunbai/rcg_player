@@ -56,8 +56,8 @@
 
 #define USE_MONITOR_CLIENT
 
-const double Options::MIN_FIELD_SCALE = 1.0;
-const double Options::MAX_FIELD_SCALE = 400.0;
+const double Options::MIN_FIELD_SCALE = 1.0e-6;
+const double Options::MAX_FIELD_SCALE = 1.0e6;
 const double Options::ZOOM_RATIO = 1.5;
 const int Options::DEFAULT_TIMER_INTERVAL = 100;
 
@@ -190,9 +190,9 @@ Options::writeSettings()
 
     settings.beginGroup( "Global" );
 
-     settings.setValue( "canvas_width", M_canvas_width );
-     settings.setValue( "canvas_height", M_canvas_height );
-     settings.setValue( "hide_menu_bar", M_hide_menu_bar );
+    settings.setValue( "canvas_width", M_canvas_width );
+    settings.setValue( "canvas_height", M_canvas_height );
+    settings.setValue( "hide_menu_bar", M_hide_menu_bar );
     settings.setValue( "anti_aliasing", M_anti_aliasing );
     settings.setValue( "show_draw_info", M_show_draw_info );
     settings.setValue( "show_grid_coord", M_show_grid_coord );
@@ -284,7 +284,7 @@ Options::updateFieldSize( const int canvas_width,
 
         if ( ! zoomed() )
         {
-            M_field_scale = MIN_FIELD_SCALE;
+            M_field_scale = 100.0;
             M_field_scale = rint( M_field_scale * 100.0 ) / 100.0;
         }
     }
@@ -351,16 +351,16 @@ Options::parseCmdLine( int argc,
           "start without a status bar." )
         // view options
         ( "anti-aliasing",
-          boost::program_options::value< bool >( &M_anti_aliasing )->default_value( true, "on" ),
+          boost::program_options::value< bool >( &M_anti_aliasing ),
           "show anti-aliased objects." )
         ( "show-draw-info",
-          boost::program_options::value< bool >( &M_show_draw_info )->default_value( true, "on" ),
+          boost::program_options::value< bool >( &M_show_draw_info ),
           "show team draw information." )
         ( "show-grid-coord",
-          boost::program_options::value< bool >( &M_show_grid_coord )->default_value( false, "off" ),
+          boost::program_options::value< bool >( &M_show_grid_coord ),
           "show grid line coordinate value." )
         ( "grid-step",
-          boost::program_options::value< double >( &M_grid_step )->default_value( 0.0, "0.0" ),
+          boost::program_options::value< double >( &M_grid_step ),
           "set a grid step size." )
         ;
 
@@ -501,5 +501,6 @@ Options::parseCmdLine( int argc,
 //         }
 //     }
 #endif
+
     return true;
 }

@@ -41,6 +41,8 @@
 #include <string>
 #include <cmath>
 
+#include <QTimer>
+
 /*!
   \class Options
   \brief application setting holder singleton.
@@ -105,6 +107,8 @@ private:
     bool M_zoomed;
     QPoint M_field_center; //!< field center point on the screen
 
+    QTimer * M_timer;
+
     //! private access for singleton
     Options();
 
@@ -127,6 +131,14 @@ public:
     // logplayer options
     //
 
+
+    void setTimer(QTimer *timer) {
+        M_timer = timer;
+    }
+
+    QTimer *timer() {
+        return M_timer;
+    }
 
     bool minimumMode() const
       {

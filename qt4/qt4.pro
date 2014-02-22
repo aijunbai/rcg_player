@@ -2,7 +2,7 @@ CONFIG += release
 
 TEMPLATE = app
 QT += network
-TARGET = uniplayer
+TARGET = rcg_player
 DESTDIR = ../bin
 
 DEPENDPATH += . ../rcg
@@ -43,8 +43,8 @@ macx {
   DEFINES += HAVE_NETINET_IN_H
   DEFINES += HAVE_BOOST_PROGRAM_OPTIONS
 }
-DEFINES += PACKAGE="\\\"uniplayer\\\""
-DEFINES += PACKAGE_NAME="\\\"uniplayer\\\"" VERSION="\\\"1.0\\\""
+DEFINES += PACKAGE="\\\"rcg_player\\\""
+DEFINES += PACKAGE_NAME="\\\"rcg_player\\\"" VERSION="\\\"1.0\\\""
 
 CONFIG += qt warn_on release
 win32 {
@@ -85,7 +85,7 @@ SOURCES += \
 	main_window.cpp \
 	options.cpp \
 
-nodist_uniplayer_SOURCES = \
+nodist_rcg_player_SOURCES = \
 	moc_config_dialog.cpp \
 	moc_field_canvas.cpp \
 	moc_log_player.cpp \
@@ -94,7 +94,7 @@ nodist_uniplayer_SOURCES = \
 	moc_main_window.cpp \
 
 win32 {
-RC_FILE = uniplayer.rc
+RC_FILE = rcg_player.rc
 }
 macx {
 ICON = ../icons/rcss.icns

@@ -57,6 +57,8 @@ LogPlayer::LogPlayer( MainData & main_data,
 {
     connect( M_timer, SIGNAL( timeout() ),
              this, SLOT( handleTimer() ) );
+
+    Options::instance().setTimer(M_timer);
 }
 
 /*-------------------------------------------------------------------*/

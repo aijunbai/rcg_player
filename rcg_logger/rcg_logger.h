@@ -15,7 +15,7 @@
 /**
  * RCG format logger
  */
-class Logger {
+class RCGLogger {
 public:
 	enum Color {
 		Red,
@@ -159,11 +159,11 @@ public:
 	void AddCircle(const Vector & origin, const double & radius, Color color = White) { circles_.push_back(CircleShape(origin, radius, color)); }
 
 public:
-	Logger(const char *file_name): time_(0), focus_(0.0, 0.0), scale_x_(1.0), scale_y_(1.0) {
+	RCGLogger(const char *file_name): time_(0), focus_(0.0, 0.0), scale_x_(1.0), scale_y_(1.0) {
 		fout.open(file_name);
 	}
 
-	~Logger() {
+	~RCGLogger() {
 		fout.close();
 	}
 
