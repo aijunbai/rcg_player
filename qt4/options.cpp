@@ -259,7 +259,7 @@ Options::unzoom()
                      || focusPoint().y() != 0.0 )
     {
         M_zoomed = false;
-        M_focus_point = M_last_real_focus_point;
+        M_focus_point = M_real_focus_point;
 
         int temp_width = M_canvas_width;
         M_canvas_width += 1;
@@ -283,7 +283,7 @@ Options::updateFieldSize( const int canvas_width,
 
         if ( ! zoomed() )
         {
-            M_field_scale = 100.0;
+            M_field_scale = 62.5;
             M_field_scale = rint( M_field_scale * 100.0 ) / 100.0;
         }
     }

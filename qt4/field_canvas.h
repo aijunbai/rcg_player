@@ -129,6 +129,8 @@ protected:
 
     void paintEvent( QPaintEvent * );
 
+    void updateFocus();
+
 public slots:
 
 signals:

@@ -24,11 +24,11 @@ win32 {
 }
 unix {
   LIBS += -L/opt/local/lib
-  LIBS += -lboost_program_options-mt -lz
+  LIBS += -lboost_program_options -lz
 }
 macx {
   LIBS += -L/opt/local/lib
-  LIBS += -lboost_program_options-mt -lz
+  LIBS += -lboost_program_options -lz
 }
 
 DEFINES += HAVE_LIBZ

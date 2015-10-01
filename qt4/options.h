@@ -101,7 +101,7 @@ private:
     bool M_show_grid_coord;
 
     QPointF M_focus_point; //!< real coordinates
-    QPointF M_last_real_focus_point; //!< real coordinates
+    QPointF M_real_focus_point; //!< real coordinates
 
     // zoom
     double M_field_scale;
@@ -137,7 +137,7 @@ public:
         M_timer = timer;
     }
 
-    QTimer *timer() {
+    QTimer *timer() const {
         return M_timer;
     }
 
@@ -304,14 +304,17 @@ public:
       }
     void setFocusPoint( const int screen_x,
                         const int screen_y );
+
     void setFocusPointReal( const double & x,
                             const double & y )
       {
-          M_focus_point.setX( x );
-          M_focus_point.setY( y );
-
-          M_last_real_focus_point = M_focus_point;
+          M_real_focus_point.setX( x );
+          M_real_focus_point.setY( y );
       }
+
+    void setFocusPoint() {
+        M_focus_point = M_real_focus_point;
+    }
 
     int scale( const double & len ) const
       {

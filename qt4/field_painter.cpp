@@ -50,7 +50,8 @@
  */
 FieldPainter::FieldPainter( const MainData & main_data )
     : M_main_data( main_data )
-    , M_field_brush( QColor( 31, 160, 31 ), Qt::SolidPattern )
+    , M_field_brush( QColor( 255, 255, 255 ), Qt::SolidPattern )
+    //, M_field_brush( QColor( 31, 160, 31 ), Qt::SolidPattern )
     , M_line_pen( QColor( 0xaa, 0xaa, 0xaa ),1, Qt::SolidLine )
 {
     readSettings();
@@ -190,7 +191,7 @@ FieldPainter::drawGrid( QPainter & painter ) const
 
     const QFontMetrics metrics = painter.fontMetrics();
     const int text_step_x = ( opt.showGridCoord()
-                              ? metrics.width( QObject::tr( "-00.000" ) )
+                              ? metrics.width( QObject::tr( "-00.0" ) )
                               : 100000 );
     const int text_step_y = ( opt.showGridCoord()
                               ? metrics.ascent()
@@ -225,8 +226,8 @@ FieldPainter::drawGrid( QPainter & painter ) const
         int ix = opt.screenX( x );
         if ( istep > text_step_x )
         {
-            text.sprintf( "%.3f", x );
-            painter.drawText( ix, coord_x_print_y , text );
+            text.sprintf( "%.1f", x );
+//            painter.drawText( ix, coord_x_print_y , text );
         }
         painter.drawLine( ix, max_iy, ix, min_iy );
         x += grid_step;
@@ -238,8 +239,8 @@ FieldPainter::drawGrid( QPainter & painter ) const
         int ix = opt.screenX( x );
         if ( istep > text_step_x )
         {
-            text.sprintf( "%.3f", x );
-            painter.drawText( ix, coord_x_print_y, text );
+            text.sprintf( "%.1f", x );
+            //painter.drawText( ix, coord_x_print_y, text );
         }
         painter.drawLine( ix, max_iy, ix, min_iy );
         x -= grid_step;
@@ -252,8 +253,8 @@ FieldPainter::drawGrid( QPainter & painter ) const
         int iy = opt.screenY( y );
         if ( istep > text_step_y )
         {
-            text.sprintf( "%.3f", y );
-            painter.drawText( min_ix, iy, text );
+            text.sprintf( "%.1f", y );
+            //painter.drawText( min_ix, iy, text );
         }
         painter.drawLine( max_ix, iy, min_ix, iy );
         y += grid_step;
@@ -265,8 +266,8 @@ FieldPainter::drawGrid( QPainter & painter ) const
         int iy = opt.screenY( y );
         if ( istep > text_step_y )
         {
-            text.sprintf( "%.3f", y );
-            painter.drawText( min_ix, iy, text );
+            text.sprintf( "%.1f", y );
+            //painter.drawText( min_ix, iy, text );
         }
         painter.drawLine( max_ix, iy, min_ix, iy );
         y -= grid_step;

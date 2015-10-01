@@ -35,6 +35,8 @@
 #endif
 
 #include <QtGui>
+#include <sstream>
+#include <iomanip>
 
 #include "field_canvas.h"
 
@@ -48,6 +50,8 @@
 #include <iostream>
 #include <cmath>
 #include <cassert>
+
+using namespace std;
 
 /*-------------------------------------------------------------------*/
 /*!
@@ -202,7 +206,8 @@ FieldCanvas::setSystemMenu( QMenu * menu )
 void
 FieldCanvas::paintEvent( QPaintEvent * )
 {
-    QPainter painter( this );
+    QPixmap pixmap(width(), height());
+    QPainter painter( &pixmap );
 
     if ( Options::instance().antiAliasing() )
     {
@@ -217,6 +222,29 @@ FieldCanvas::paintEvent( QPaintEvent * )
     {
         drawMouseMeasure( painter );
     }
+
+    painter.setPen(QPen(Qt::black, 5.0));
+    painter.drawRect(0, 0, width(), height());
+
+    const int current_time = M_main_data.index();
+
+    std::stringstream ss2;
+    ss2 << "/home/baj/Documents/Publications/AAAI-15/MOT/depth/frame_" << setw(4) << setfill('0') << current_time << ".png";
+    QPixmap pixmap2(QString::fromStdString(ss2.str()));
+
+    QPixmap pixmap3(width() * 2.0, height());
+    QPainter painter3( &pixmap3 );
+
+    painter3.drawPixmap(QPointF(0, 0), pixmap2);
+    painter3.drawPixmap(QPointF(width(), 0), pixmap);
+
+    std::stringstream ss;
+    ss << "/tmp/baj/frame_" << setw(4) << setfill('0') << current_time << ".png";
+
+    pixmap3.save(QString::fromStdString(ss.str()), "PNG");
+
+    QPainter painter2( this );
+    painter2.drawPixmap(QPointF(0, 0), pixmap);
 }
 
 /*-------------------------------------------------------------------*/
@@ -408,6 +436,7 @@ FieldCanvas::mouseMoveEvent( QMouseEvent * event )
 void
 FieldCanvas::draw( QPainter & painter )
 {
+    updateFocus();
     // update field scale and related things
     Options::instance().updateFieldSize( this->width(), this->height() );
 
@@ -502,4 +531,14 @@ FieldCanvas::drawMouseMeasure( QPainter & painter )
     painter.drawText( end_point.x(),
                       end_point.y() + dist_add_y,
                       QString::fromAscii( buf ) );
+}
+
+void FieldCanvas::updateFocus()
+{
+    Options & opt = Options::instance();
+
+    if (!opt.timer()->isActive()) return;
+    if (M_mouse_state[0].isDragged()) return;
+
+    opt.setFocusPoint();
 }

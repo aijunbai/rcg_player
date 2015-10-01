@@ -132,7 +132,7 @@ DrawInfoPainter::draw( QPainter & painter )
     {
    
         QString main_buf;
-        main_buf.sprintf( "%d", current_time);
+        main_buf.sprintf( "%d ", current_time);
 
         QFont M_font;
         M_font.setPointSize( 11 );

@@ -151,6 +151,7 @@ MainData::openRCG( const QString & file_path,
 
     M_index = 0;
     updateFocus();
+    Options::instance().setFocusPoint();
 
     return true;
 }
