@@ -1,1 +1,0 @@
-把rcsslogplayer里面关于2D相关的代码全部删除，得到一个只支持draw_info的logplayer，可以用来方便绘制各种自定义的log，log格式见data/cart-pole.rcg -- 一个倒立摆运动log
