@@ -8,8 +8,8 @@ Log file player using RCG format, inspired from [rcsslogplayer](http://sourcefor
 - Run `./build.sh` to compile
 
 # Usages
-- Run `./bin/rcg_player data/cart-pole.rcg` to view a cart-pole log
-- Run `./bin/rcg_player data/human_track.rcg` to view a human track log
+- Run `./bin/rcg_player data/cart-pole.rcg` to view a [cart-pole](https://github.com/aijunbai/pole) log
+- Run `./bin/rcg_player data/human_track.rcg` to view a [human-tracker](https://github.com/aijunbai/pfs) log
 
 # Key Shortcuts
 ![data/keys.png](data/keys.png "Key Shortcuts")
