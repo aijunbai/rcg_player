@@ -4,6 +4,11 @@
 
 Log file player using RCG format, inspired from [rcsslogplayer](http://sourceforge.net/projects/sserver/files/rcsslogplayer/).
 
+# Dependencies
+- libqt4-dev 
+- qt4-qmake 
+- libboost-all-dev
+
 # Compiling
 - Run `./build.sh` to compile
 
